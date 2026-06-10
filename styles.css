@@ -424,7 +424,7 @@ h1 em, .section-title em {
 .marquee-track {
   display: flex; align-items: center; gap: 34px;
   width: max-content;
-  animation: marquee 30s linear infinite;
+  animation: marquee 55s linear infinite;
 }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 .marquee-track span {
