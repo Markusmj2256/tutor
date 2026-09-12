@@ -201,10 +201,19 @@
     }
   }
 
-  /* ---------- Kontaktformularer → klargør mail i brugerens mailprogram ---------- */
-  const setupMailForm = (form, isGroup) => {
+  /* ---------- Kontaktformularer → sendes til backend ---------- */
+  // Supabase edge-funktion, der gemmer henvendelsen og sender en mail til Markus.
+  // Nøglen herunder er den offentlige anon-nøgle; den er lavet til at ligge i
+  // klientkode. Selve tabellen er lukket med row level security, så nøglen alene
+  // giver ingen adgang til de indsendte oplysninger.
+  const CONTACT_ENDPOINT = "https://kslmcjkyhxdevdfyzzrb.supabase.co/functions/v1/contact";
+  const CONTACT_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzbG1jamt5aHhkZXZkZnl6enJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0Mzc4NDIsImV4cCI6MjEwMTAxMzg0Mn0.lP-uPzYevRcKCos3wOQVB56XjrDgWrHqXJtSt1x-300";
+
+  const setupContactForm = (form, source) => {
     if (!form) return;
-    const isIndividual = !isGroup && Boolean(form.querySelector('[name="package"]'));
+    const button = form.querySelector('[type="submit"]');
+    const buttonMarkup = button ? button.innerHTML : "";
 
     const feedback = document.createElement("p");
     feedback.className = "form-note form-feedback";
@@ -213,66 +222,71 @@
     feedback.hidden = true;
     form.append(feedback);
 
-    form.addEventListener("submit", (event) => {
+    const fallback = (lead) => {
+      const mail = document.createElement("a");
+      mail.href = "mailto:markusmj2256@gmail.com";
+      mail.textContent = "markusmj2256@gmail.com";
+      const tel = document.createElement("a");
+      tel.href = "tel:+4524259986";
+      tel.textContent = "24 25 99 86";
+      feedback.replaceChildren(lead, mail, " eller ring på ", tel, ".");
+    };
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
 
       const data = new FormData(form);
-      const get = (k) => (data.get(k) || "").toString().trim();
-      const name = get("name");
-      const level = get("level");
-      const subject = get("subject");
-      const message = get("message");
-      const subjectLine = isGroup
-        ? `Interesse for holdundervisning${subject ? ` – ${subject}` : ""}`
-        : `Forespørgsel om ${isIndividual ? "eneundervisning" : "undervisning"}${level ? ` – ${level}` : ""}`;
-      const details = [
-        ["Navn", name],
-        ["E-mail", get("email")],
-        ["Telefon", get("phone")],
-        ["Klassetrin", level],
-        ["Fag", subject],
-        ["Ønsket fag", get("otherSubject")],
-        ["Undervisningspakke", get("package")],
-      ]
-        .filter(([, value]) => value)
-        .map(([label, value]) => `${label}: ${value}`);
-      const body = [
-        "Hej Markus",
-        "",
-        isGroup
-          ? "Jeg vil gerne kontaktes for at høre mere om at melde mig på et hold."
-          : isIndividual
-            ? "Jeg vil gerne høre mere om en til en-undervisning."
-            : "Jeg vil gerne høre mere om undervisning.",
-        "",
-        ...details,
-        ...(message ? ["", "Besked:", message] : []),
-        "",
-        "Venlig hilsen",
-        name,
-      ].join("\n");
+      const get = (key) => (data.get(key) || "").toString().trim();
+      // Holdformularen har et ekstra felt til ønsket fag; det hører til emnet.
+      const subject = [get("subject"), get("otherSubject")].filter(Boolean).join(" – ");
 
-      const mailto = `mailto:markusmj2256@gmail.com?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
-      const retryLink = document.createElement("a");
-      retryLink.href = mailto;
-      retryLink.textContent = "Åbn mailen igen";
-      feedback.hidden = false;
-      feedback.replaceChildren(
-        "Mailen er klargjort. Send den i dit mailprogram, så Markus kan kontakte dig. Formularen sender ikke automatisk dine oplysninger. ",
-        retryLink,
-        ". Hvis dit mailprogram ikke åbner, kan du skrive til markusmj2256@gmail.com eller ringe på 24 25 99 86."
-      );
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Sender…";
+      }
+      feedback.hidden = true;
 
-      // The browser cannot confirm whether an external mail application opens or sends.
       try {
-        window.location.href = mailto;
-      } catch {
-        // The visible email address and retry link remain available.
+        const response = await fetch(CONTACT_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${CONTACT_KEY}`,
+          },
+          body: JSON.stringify({
+            source,
+            name: get("name"),
+            phone: get("phone"),
+            email: get("email"),
+            level: get("level"),
+            subject,
+            package: get("package"),
+            message: get("message"),
+            company: get("company"), // honeypot — kun bots udfylder den
+            page_url: location.href,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `Serveren svarede ${response.status}`);
+
+        form.reset();
+        feedback.hidden = false;
+        feedback.textContent =
+          "Tak — din besked er sendt. Markus vender tilbage, typisk samme dag.";
+      } catch (error) {
+        feedback.hidden = false;
+        fallback(`Beskeden kunne ikke sendes (${error.message}). Prøv igen, eller skriv til `);
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = buttonMarkup;
+        }
       }
     });
   };
 
-  setupMailForm(bookingForm, false);
-  setupMailForm(groupForm, true);
+  const currentPage = location.pathname.split("/").pop() || "index.html";
+  setupContactForm(bookingForm, currentPage.startsWith("ene") ? "ene" : "forside");
+  setupContactForm(groupForm, "hold");
 })();

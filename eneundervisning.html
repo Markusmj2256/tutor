@@ -203,7 +203,7 @@
           </div>
           <p class="pricing-note reveal">Vil eleven hellere lære sammen med andre? <a href="holdundervisning.html">Læs om holdundervisning i Matematik A og B</a>.</p>
         </div>
-        <form class="contact-form glass-card reveal" id="booking-form" method="post" action="mailto:markusmj2256@gmail.com" enctype="text/plain" aria-describedby="booking-form-note">
+        <form class="contact-form glass-card reveal" id="booking-form" aria-describedby="booking-form-note">
           <div class="form-row">
             <label>Forælders navn
               <input name="name" autocomplete="name" required>
@@ -239,9 +239,11 @@
           <label>Hvad skal der hjælpes med?
             <textarea name="message" rows="4" placeholder="Fx næste prøve, eksamen, fast ugentlig hjælp og hvor I bor"></textarea>
           </label>
-          <button class="button button-primary full" type="submit">Klargør forespørgsel på mail <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="form-note" id="booking-form-note">Knappen åbner en klargjort mail. Din forespørgsel er først sendt til mig, når du selv sender mailen i dit mailprogram.</p>
-          <p class="form-note">Åbner dit mailprogram ikke? <a href="mailto:markusmj2256@gmail.com">Skriv direkte til Markus</a> eller ring på <a href="tel:+4524259986">24 25 99 86</a>.</p>
+          <p class="honeypot" aria-hidden="true">
+            <label>Lad dette felt stå tomt<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+          </p>
+          <button class="button button-primary full" type="submit">Kontakt <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form-note" id="booking-form-note">Beskeden sendes direkte til Markus, som vender tilbage typisk samme dag. Du kan også ringe eller sende en SMS på <a href="tel:+4524259986">24 25 99 86</a>.</p>
         </form>
       </div>
     </section>

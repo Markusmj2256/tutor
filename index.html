@@ -392,7 +392,7 @@
           </div>
         </div>
 
-        <form class="contact-form glass-card reveal" id="booking-form" action="mailto:markusmj2256@gmail.com" method="post" enctype="text/plain">
+        <form class="contact-form glass-card reveal" id="booking-form">
           <div class="form-row">
             <label>Forælders navn
               <input name="name" autocomplete="name" required>
@@ -420,8 +420,11 @@
           <label>Hvad skal der hjælpes med?
             <textarea name="message" rows="4" placeholder="Fx næste prøve, eksamen, manglende overblik eller fast ugentlig hjælp"></textarea>
           </label>
-          <button class="button button-primary full" type="submit">Klargør forespørgsel på mail <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="form-note">Knappen åbner en færdig mail til Markus. Send den i dit mailprogram, så jeg modtager din forespørgsel. Du kan også ringe eller sende en SMS.</p>
+          <p class="honeypot" aria-hidden="true">
+            <label>Lad dette felt stå tomt<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+          </p>
+          <button class="button button-primary full" type="submit">Kontakt <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form-note">Beskeden sendes direkte til Markus, som vender tilbage typisk samme dag. Du kan også ringe eller sende en SMS på <a href="tel:+4524259986">24 25 99 86</a>.</p>
         </form>
       </div>
     </section>
