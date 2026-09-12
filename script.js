@@ -10,17 +10,19 @@
   const progress = document.getElementById("progress");
   const mobileCta = document.getElementById("mobile-cta");
   const hero = document.getElementById("hero");
+  const contactSection = document.getElementById("kontakt");
 
   const onScroll = () => {
     const y = window.scrollY;
-    header.classList.toggle("scrolled", y > 12);
+    if (header) header.classList.toggle("scrolled", y > 12);
 
     const doc = document.documentElement;
     const max = doc.scrollHeight - window.innerHeight;
     if (progress) progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
 
     if (mobileCta && hero) {
-      mobileCta.classList.toggle("show", y > hero.offsetHeight * 0.7);
+      const nearContact = contactSection && contactSection.getBoundingClientRect().top < window.innerHeight * 0.75;
+      mobileCta.classList.toggle("show", y > hero.offsetHeight * 0.7 && !nearContact);
     }
   };
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -30,16 +32,22 @@
   const navToggle = document.getElementById("nav-toggle");
   const siteNav = document.getElementById("site-nav");
   if (navToggle && siteNav) {
-    navToggle.addEventListener("click", () => {
-      const open = siteNav.classList.toggle("open");
+    const setMenuOpen = (open) => {
+      siteNav.classList.toggle("open", open);
       navToggle.setAttribute("aria-expanded", String(open));
+    };
+    navToggle.addEventListener("click", () => {
+      setMenuOpen(!siteNav.classList.contains("open"));
     });
     siteNav.querySelectorAll("a").forEach((a) =>
-      a.addEventListener("click", () => {
-        siteNav.classList.remove("open");
-        navToggle.setAttribute("aria-expanded", "false");
-      })
+      a.addEventListener("click", () => setMenuOpen(false))
     );
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && siteNav.classList.contains("open")) {
+        setMenuOpen(false);
+        navToggle.focus();
+      }
+    });
   }
 
   /* ---------- Scroll reveals ---------- */
@@ -139,54 +147,132 @@
   /* ---------- FAQ accordion ---------- */
   document.querySelectorAll(".faq-item").forEach((item) => {
     const btn = item.querySelector(".faq-q");
+    if (!btn) return;
+    const answer = item.querySelector(".faq-a");
+    if (answer) answer.inert = !item.classList.contains("open");
     btn.addEventListener("click", () => {
       const isOpen = item.classList.contains("open");
       document.querySelectorAll(".faq-item.open").forEach((other) => {
         other.classList.remove("open");
         other.querySelector(".faq-q").setAttribute("aria-expanded", "false");
+        const otherAnswer = other.querySelector(".faq-a");
+        if (otherAnswer) otherAnswer.inert = true;
       });
       if (!isOpen) {
         item.classList.add("open");
         btn.setAttribute("aria-expanded", "true");
+        if (answer) answer.inert = false;
       }
     });
   });
 
-  /* ---------- Kontaktformular → mailto ---------- */
+  /* ---------- Pakkevalg og interesse for holdundervisning ---------- */
   const bookingForm = document.getElementById("booking-form");
-  if (bookingForm) {
-    bookingForm.addEventListener("submit", (event) => {
+  const packageSelect = bookingForm?.querySelector('[name="package"]');
+  if (packageSelect) {
+    document.querySelectorAll("[data-package]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const packageName = button.dataset.package;
+        if ([...packageSelect.options].some((option) => option.value === packageName)) {
+          packageSelect.value = packageName;
+          packageSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      });
+    });
+  }
+
+  const groupForm = document.getElementById("group-form");
+  if (groupForm) {
+    const subjectSelect = groupForm.querySelector('[name="subject"]');
+    const otherField = document.getElementById("other-subject-field");
+    const otherInput = document.getElementById("other-subject");
+    if (subjectSelect && otherField && otherInput) {
+      const updateOtherSubject = () => {
+        const isOther = subjectSelect.value === "Andet fag";
+        otherField.hidden = !isOther;
+        otherInput.required = isOther;
+        otherInput.disabled = !isOther;
+      };
+      subjectSelect.addEventListener("change", updateOtherSubject);
+      groupForm.addEventListener("reset", () => {
+        requestAnimationFrame(updateOtherSubject);
+      });
+      updateOtherSubject();
+    }
+  }
+
+  /* ---------- Kontaktformularer → klargør mail i brugerens mailprogram ---------- */
+  const setupMailForm = (form, isGroup) => {
+    if (!form) return;
+    const isIndividual = !isGroup && Boolean(form.querySelector('[name="package"]'));
+
+    const feedback = document.createElement("p");
+    feedback.className = "form-note form-feedback";
+    feedback.setAttribute("role", "status");
+    feedback.setAttribute("aria-atomic", "true");
+    feedback.hidden = true;
+    form.append(feedback);
+
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const data = new FormData(bookingForm);
+      if (!form.reportValidity()) return;
+
+      const data = new FormData(form);
       const get = (k) => (data.get(k) || "").toString().trim();
       const name = get("name");
-      const phone = get("phone");
       const level = get("level");
       const subject = get("subject");
       const message = get("message");
-
-      const subjectLine = `Forespørgsel om tutoring – ${level || "klassetrin"}`;
+      const subjectLine = isGroup
+        ? `Interesse for holdundervisning${subject ? ` – ${subject}` : ""}`
+        : `Forespørgsel om ${isIndividual ? "eneundervisning" : "undervisning"}${level ? ` – ${level}` : ""}`;
+      const details = [
+        ["Navn", name],
+        ["E-mail", get("email")],
+        ["Telefon", get("phone")],
+        ["Klassetrin", level],
+        ["Fag", subject],
+        ["Ønsket fag", get("otherSubject")],
+        ["Undervisningspakke", get("package")],
+      ]
+        .filter(([, value]) => value)
+        .map(([label, value]) => `${label}: ${value}`);
       const body = [
         "Hej Markus",
         "",
-        "Jeg vil gerne høre mere om undervisning.",
+        isGroup
+          ? "Jeg vil gerne kontaktes for at høre mere om at melde mig på et hold."
+          : isIndividual
+            ? "Jeg vil gerne høre mere om en til en-undervisning."
+            : "Jeg vil gerne høre mere om undervisning.",
         "",
-        `Navn: ${name}`,
-        `Telefon: ${phone}`,
-        `Klassetrin: ${level}`,
-        `Fag: ${subject}`,
-        "",
-        "Hvad vi gerne vil have hjælp til:",
-        message || "(skriv kort om behovet)",
+        ...details,
+        ...(message ? ["", "Besked:", message] : []),
         "",
         "Venlig hilsen",
         name,
       ].join("\n");
 
-      const mailto = new URL("mailto:markusmj2256@gmail.com");
-      mailto.searchParams.set("subject", subjectLine);
-      mailto.searchParams.set("body", body);
-      window.location.href = mailto.toString();
+      const mailto = `mailto:markusmj2256@gmail.com?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(body)}`;
+      const retryLink = document.createElement("a");
+      retryLink.href = mailto;
+      retryLink.textContent = "Åbn mailen igen";
+      feedback.hidden = false;
+      feedback.replaceChildren(
+        "Mailen er klargjort. Send den i dit mailprogram, så Markus kan kontakte dig. Formularen sender ikke automatisk dine oplysninger. ",
+        retryLink,
+        ". Hvis dit mailprogram ikke åbner, kan du skrive til markusmj2256@gmail.com eller ringe på 24 25 99 86."
+      );
+
+      // The browser cannot confirm whether an external mail application opens or sends.
+      try {
+        window.location.href = mailto;
+      } catch {
+        // The visible email address and retry link remain available.
+      }
     });
-  }
+  };
+
+  setupMailForm(bookingForm, false);
+  setupMailForm(groupForm, true);
 })();
