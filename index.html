@@ -19,7 +19,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
+  <noscript><style>.reveal, .reveal-stagger > * { opacity: 1; transform: none; }</style></noscript>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -31,8 +32,8 @@
     "areaServed": ["Gentofte", "Lyngby", "Virum", "Charlottenlund", "Hellerup"],
     "description": "Personlig matematik- og naturfagsundervisning til gymnasiet og 8.-9. klasse i Gentofte og Lyngby.",
     "makesOffer": [
-      { "@type": "Offer", "name": "1:1-undervisning", "price": "325", "priceCurrency": "DKK", "description": "Personlig undervisning fra 325 kr. pr. time." },
-      { "@type": "Offer", "name": "Små hold", "price": "200", "priceCurrency": "DKK", "description": "Holdundervisning fra 200 kr. pr. time pr. elev." }
+      { "@type": "Offer", "name": "1:1-undervisning", "url": "https://markusmj2256.github.io/tutor/eneundervisning.html", "price": "325", "priceCurrency": "DKK", "description": "325 kr. pr. time ved køb af 40 timer eller mere. 20 timer: 350 kr. pr. time. Fra gang til gang: 400 kr. pr. time." },
+      { "@type": "Offer", "name": "Små hold", "url": "https://markusmj2256.github.io/tutor/holdundervisning.html", "price": "200", "priceCurrency": "DKK", "description": "Matematik A eller B på hold med 4–5 gymnasieelever. Fra 200 kr. pr. time pr. elev." }
     ]
   }
   </script>
@@ -50,8 +51,8 @@
     </a>
     <nav class="site-nav" id="site-nav" aria-label="Primær navigation">
       <a href="#forlob">Sådan foregår det</a>
-      <a href="#fag">Fag</a>
-      <a href="#priser">Priser</a>
+      <a href="holdundervisning.html">Holdundervisning</a>
+      <a href="eneundervisning.html">1:1-undervisning</a>
       <a href="#om">Om Markus</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -277,30 +278,30 @@
     <section class="section" id="priser" aria-labelledby="priser-title">
       <div class="section-inner">
         <p class="section-kicker reveal">Priser</p>
-        <h2 class="section-title reveal" id="priser-title">Gennemsigtige priser — <em>ingen binding</em></h2>
+        <h2 class="section-title reveal" id="priser-title">Undervisning, der <em>passer til jer</em></h2>
         <div class="price-grid reveal-stagger">
           <article class="price-card featured tilt" data-tilt>
             <span class="badge">Mest værdi</span>
             <h3>Små hold</h3>
             <p class="price"><span class="price-num">fra 200</span> kr. <span class="per">/ time pr. elev</span></p>
             <ul>
-              <li>2–3 elever på samme niveau</li>
-              <li>Oplagt til søskende eller venner</li>
+              <li>4–5 elever på hvert hold</li>
+              <li>Matematik A eller B i gymnasiet</li>
               <li>Fælles fokus og fælles fremgang</li>
               <li>Gratis afklaringssamtale først</li>
             </ul>
-            <a class="button button-primary full" href="#kontakt">Book gratis samtale</a>
+            <a class="button button-primary full" href="holdundervisning.html" aria-label="Læs mere om holdundervisning">Læs mere <span class="arrow" aria-hidden="true">→</span></a>
           </article>
           <article class="price-card tilt" data-tilt>
             <h3>1:1-undervisning</h3>
             <p class="price"><span class="price-num">fra 325</span> kr. <span class="per">/ time</span></p>
             <ul>
-              <li>Personligt tilrettelagt forløb</li>
-              <li>Fuld fokus på én elev</li>
-              <li>Løbende status til forældre</li>
-              <li>Gratis afklaringssamtale først</li>
+              <li>325 kr./time ved 40 timer eller mere</li>
+              <li>350 kr./time ved en pakke på 20 timer</li>
+              <li>400 kr./time fra gang til gang</li>
+              <li>Som udgangspunkt 2 timer hjemme hos jer</li>
             </ul>
-            <a class="button button-ghost full" href="#kontakt">Hør mere</a>
+            <a class="button button-ghost full" href="eneundervisning.html" aria-label="Læs mere om 1:1-undervisning">Læs mere <span class="arrow" aria-hidden="true">→</span></a>
           </article>
         </div>
       </div>
@@ -343,7 +344,7 @@
           </div>
           <div class="faq-item">
             <button class="faq-q" aria-expanded="false">Hvor foregår undervisningen?<span class="faq-icon" aria-hidden="true"></span></button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Lokalt i Gentofte, Lyngby, Virum, Charlottenlund og Hellerup — typisk hjemme hos jer — eller online, hvis det passer bedre. Det aftaler vi sammen.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>1:1-undervisning foregår som udgangspunkt hjemme hos jer i sessioner på 2 timer. Ved længere transport væk fra Lyngby/Gentofte kan der komme et tillæg, som vi aftaler på forhånd. Tid og sted for holdundervisning aftales, når holdet sammensættes.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q" aria-expanded="false">Hvilke fag og niveauer dækker du?<span class="faq-icon" aria-hidden="true"></span></button>
@@ -355,11 +356,11 @@
           </div>
           <div class="faq-item">
             <button class="faq-q" aria-expanded="false">Er vi bundet til et langt forløb?<span class="faq-icon" aria-hidden="true"></span></button>
-            <div class="faq-a"><div class="faq-a-inner"><p>Nej. I betaler pr. time, og forløbet fortsætter kun, så længe det skaber værdi for eleven. Derfor starter vi også altid med en gratis samtale, så I kan mærke, om kemien passer, før I bruger penge.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>I kan vælge 1:1-undervisning fra gang til gang til 400 kr. pr. time eller købe en pakke med lavere timepris: 20 timer til 350 kr. pr. time eller 40 timer eller mere til 325 kr. pr. time. Vi starter med en gratis, uforpligtende samtale og aftaler forløbet, før I køber. En interessetilmelding til et hold er også uforpligtende.</p></div></div>
           </div>
           <div class="faq-item">
             <button class="faq-q" aria-expanded="false">Hvad koster det?<span class="faq-icon" aria-hidden="true"></span></button>
-            <div class="faq-a"><div class="faq-a-inner"><p>1:1-undervisning fra 325 kr. pr. time. Små hold (2–3 elever på samme niveau) fra 200 kr. pr. time pr. elev. Afklaringssamtalen er altid gratis.</p></div></div>
+            <div class="faq-a"><div class="faq-a-inner"><p>1:1-undervisning koster 325 kr. pr. time ved køb af 40 timer eller mere, 350 kr. pr. time ved 20 timer og 400 kr. pr. time fra gang til gang. Små hold med 4–5 elever i Matematik A eller B koster fra 200 kr. pr. time pr. elev. Se <a href="eneundervisning.html#priser">alle 1:1-pakker</a> eller <a href="holdundervisning.html">læs om holdundervisning</a>. Afklaringssamtalen er altid gratis.</p></div></div>
           </div>
         </div>
       </div>
@@ -392,7 +393,7 @@
           </div>
         </div>
 
-        <form class="contact-form glass-card reveal" id="booking-form">
+        <form class="contact-form glass-card reveal" id="booking-form" action="mailto:markusmj2256@gmail.com" method="post" enctype="text/plain">
           <div class="form-row">
             <label>Forælders navn
               <input name="name" autocomplete="name" required>
@@ -420,8 +421,8 @@
           <label>Hvad skal der hjælpes med?
             <textarea name="message" rows="4" placeholder="Fx næste prøve, eksamen, manglende overblik eller fast ugentlig hjælp"></textarea>
           </label>
-          <button class="button button-primary full" type="submit">Send forespørgsel <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="form-note">Knappen åbner en færdig mail til Markus — du kan også bare ringe eller sende en SMS.</p>
+          <button class="button button-primary full" type="submit">Klargør forespørgsel på mail <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form-note">Knappen åbner en færdig mail til Markus. Send den i dit mailprogram, så jeg modtager din forespørgsel. Du kan også ringe eller sende en SMS.</p>
         </form>
       </div>
     </section>
@@ -436,6 +437,8 @@
       <nav class="footer-nav" aria-label="Footer">
         <a href="#forlob">Sådan foregår det</a>
         <a href="#priser">Priser</a>
+        <a href="holdundervisning.html">Holdundervisning</a>
+        <a href="eneundervisning.html">1:1-undervisning</a>
         <a href="#faq">FAQ</a>
         <a href="tel:+4524259986">24 25 99 86</a>
         <a href="mailto:markusmj2256@gmail.com">Mail</a>
@@ -448,6 +451,6 @@
     <a class="button button-primary" href="#kontakt">Gratis samtale</a>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
