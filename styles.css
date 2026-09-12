@@ -1151,3 +1151,13 @@ h1 em, .section-title em {
   .contact-form { padding: 28px 20px; }
   .detail-hero .eyebrow { font-size: 0.72rem; padding-inline: 12px; }
 }
+
+/* Honeypot: usynligt felt, som kun automatiske udfyldere rammer. Skjules uden
+   display:none, da nogle bots springer skjulte felter over. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  margin: 0;
+}

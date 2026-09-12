@@ -159,7 +159,7 @@
             </a>
           </div>
         </div>
-        <form class="contact-form glass-card reveal" id="group-form" method="post" action="mailto:markusmj2256@gmail.com" enctype="text/plain" aria-describedby="group-form-note">
+        <form class="contact-form glass-card reveal" id="group-form" aria-describedby="group-form-note">
           <div class="form-row">
             <label>Dit navn
               <input name="name" autocomplete="name" required>
@@ -198,9 +198,11 @@
           <label>Dage, behov eller andre ønsker (valgfrit)
             <textarea name="message" rows="4" placeholder="Fx hvilke dage der passer, hvilke emner der driller, eller om du søger sammen med en ven"></textarea>
           </label>
-          <button class="button button-primary full" type="submit">Klargør tilmelding på mail <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="form-note" id="group-form-note">Knappen åbner en klargjort mail. Din interesse er først sendt til mig, når du selv sender mailen i dit mailprogram. Det er uforpligtende.</p>
-          <p class="form-note">Åbner dit mailprogram ikke? <a href="mailto:markusmj2256@gmail.com">Skriv direkte til Markus</a> eller ring på <a href="tel:+4524259986">24 25 99 86</a>.</p>
+          <p class="honeypot" aria-hidden="true">
+            <label>Lad dette felt stå tomt<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+          </p>
+          <button class="button button-primary full" type="submit">Kontakt <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form-note" id="group-form-note">Beskeden sendes direkte til Markus, som vender tilbage typisk samme dag. Du kan også ringe eller sende en SMS på <a href="tel:+4524259986">24 25 99 86</a>.</p>
         </form>
       </div>
     </section>
