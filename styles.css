@@ -891,6 +891,11 @@ h1 em, .section-title em {
 .dc-icon svg { width: 21px; height: 21px; }
 .direct-contact small { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 600; }
 .direct-contact strong { font-size: 1.02rem; }
+/* Mailadressen er én lang streng uden orddelinger. Uden de to regler her sætter
+   den en minimumsbredde på hele kolonnen, og på smalle telefoner (320px) skubbes
+   afsnittene ud over skærmkanten, så teksten bliver klippet. */
+.direct-contact a > span:last-child { min-width: 0; }
+.direct-contact strong { overflow-wrap: anywhere; }
 
 .contact-form { display: grid; gap: 18px; padding: 34px 32px; box-shadow: var(--shadow-md); }
 .contact-form:hover { transform: none; }
@@ -1039,6 +1044,20 @@ h1 em, .section-title em {
   .scroll-cue { display: none; }
   .section { padding-top: 64px; padding-bottom: 64px; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
+
+  /* Safari på iOS zoomer ind på siden, når man trykker i et felt med skrift
+     under 16px — og zoomer ikke ud igen. 16px holder den i ro. */
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea { font-size: 16px; }
+
+  /* Større trykflader på de links, der ellers kun er 24px høje. */
+  .nav-toggle { width: 44px; height: 44px; }
+  .footer-nav { gap: 8px 20px; }
+  .footer-nav a {
+    display: inline-flex; align-items: center;
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 480px) {
