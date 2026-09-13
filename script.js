@@ -212,6 +212,9 @@
 
   const setupContactForm = (form, source) => {
     if (!form) return;
+    // Tidspunktet formularen blev vist. En indsendelse under to sekunder
+    // efter er ikke udfyldt af et menneske, og backenden kasserer den.
+    const shownAt = Date.now();
     const button = form.querySelector('[type="submit"]');
     const buttonMarkup = button ? button.innerHTML : "";
 
@@ -264,6 +267,7 @@
             package: get("package"),
             message: get("message"),
             company: get("company"), // honeypot — kun bots udfylder den
+            elapsed_ms: Date.now() - shownAt,
             page_url: location.href,
           }),
         });

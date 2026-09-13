@@ -2,10 +2,11 @@
 
 Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte & Lyngby.
 
-- Live: https://markusmj2256.github.io/tutor/
+- Live: https://lokaltutor.vercel.app
 - `index.html` — forside med undervisningsformer, priser, erfaring og kontakt
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
+- `admin.html` / `admin.js` — intern side med indkomne henvendelser
 - `styles.css` / `script.js` — fælles design og interaktion på alle tre sider
 - `assets/` — optimerede fotos
 - `assets/photos/` — fotosessionen (webp + jpg, beskårne i flere størrelser)
@@ -19,34 +20,67 @@ Fraunces til overskrifter, Manrope til brødtekst, gyldne knapper, afrundede kor
 undervisningsfotos i responsive WebP/JPG-versioner. Navigation, mobilmenu,
 scrollanimationer og formularer deler styling og JavaScript.
 
-Kontaktformularerne klargør en mail til Markus i den besøgendes mailprogram.
-Den besøgende skal selv sende mailen. Siden sender eller gemmer ikke oplysningerne,
-og en udfyldt formular er ikke i sig selv en registreret tilmelding. Kontakt via
-telefon og direkte mail er også tilgængelig.
+## Hosting
 
-## Lokal forhåndsvisning og publicering
+Siden hostes på **Vercel** og udgives automatisk ved push til `main`.
 
-Kør `python3 -m http.server 8879 --bind 127.0.0.1` fra denne mappe og åbn
-`http://127.0.0.1:8879/`. Der er ingen installation af produktionsafhængigheder.
+- Produktion: https://lokaltutor.vercel.app
+- Projekt: `johsens/lokaltutor`, koblet til `Markusmj2256/tutor`
 
-GitHub Pages publicerer roden af `gh-pages`, mens kildekoden vedligeholdes på `main`.
-Efter commit og push til `main` merges ændringerne til `gh-pages` og pushes.
-Kontrollér Pages-build og alle tre offentlige adresser efter publicering.
-Brug relative links og filstier, så siderne fungerer under `/tutor/`.
+`gh-pages` viderestiller nu til Vercel, så QR-koder på allerede trykte flyers
+stadig virker. Den gren indeholder ikke længere selve siden.
 
-## Hostingvurdering — 12. september 2026
+Bemærk: Vercels Hobby-plan er til ikke-kommerciel brug. Undervisning mod betaling
+er kommercielt, så planen bør opgraderes, inden der kommer betalende kunder ind
+via siden.
 
-GitHub Pages er teknisk korrekt konfigureret til den statiske side med HTTPS.
-GitHub beskriver dog [begrænsninger for kommerciel brug af Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
-En separat kommerciel host er derfor værd at overveje til en undervisningsforretning.
-Der er ikke ændret hosting eller stack i denne opdatering.
+## Backend — henvendelser
 
-[Vercel med GitHub](https://vercel.com/docs/git/vercel-for-github) kan senere give
-automatisk publicering og forhåndsvisninger uden at ændre HTML/CSS/JS eller flytte
-koden fra GitHub. [Hobby-planen er til ikke-kommerciel brug](https://vercel.com/docs/plans/hobby),
-så erhvervsbrug kræver en passende betalt plan.
+Alle tre formularer sender til Supabase edge-funktionen `contact`, som gemmer i
+tabellen `tutor_leads` og sender en notifikationsmail via Resend. Henvendelsen
+gemmes altid først, så en besked ikke går tabt, hvis mailtjenesten fejler.
 
-[Supabase](https://supabase.com/docs/guides/database/overview) er ikke nødvendigt
-til informationssiderne. Det kan blive relevant til en database med interessetilmeldinger,
-holdpladser og administration, hvis mailformularerne senere skal erstattes af direkte
-registrering på hjemmesiden. Ingen database eller nye eksterne tjenester er tilføjet.
+Værn mod spam og dubletter:
+
+| Lag | Virkning |
+| --- | --- |
+| Honeypot | Skjult felt `company`; udfyldt = bot. Afvises stille med 200. |
+| Tidskontrol | Indsendt under 2 sekunder efter sidevisning = bot. Afvises stille. |
+| Rate limit | Højst 5 indsendelser i timen og 15 i døgnet pr. IP. Svarer 429. |
+| Dubletter | `submit_tutor_lead` samler gentagne henvendelser fra samme person på samme formular i én række. |
+
+Dubletter genkendes på normaliseret mail (små bogstaver) eller telefon (sidste
+otte cifre, så `+45 24 25 99 86` og `24259986` er samme nummer). Skriver nogen
+sig op igen, opdateres rækken, beskeden lægges til som nyt afsnit, og
+`submissions` tælles op. Unikke indeks i databasen garanterer én række pr.
+person pr. formular.
+
+Rate limiting bruger `tutor_submit_log`, som kun gemmer et saltet SHA-256-hash
+af IP-adressen — ingen personoplysninger. Rækker over 30 dage ryddes løbende.
+
+## Admin
+
+`admin.html` viser henvendelserne. Log ind med Supabase Auth.
+
+Adgangen styres af row level security, ikke af klientkoden: en konto får kun
+adgang, hvis dens mailadresse står i tabellen `admin_emails`. Anon-nøglen i
+`admin.js` er offentlig og giver i sig selv ingen adgang til data.
+
+Siden kan filtrere på formular og status, søge i alle felter, sætte status
+(ny, kontaktet, tilmeldt, lukket), gemme egne noter og hente en CSV til Excel.
+Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.
+
+`admin.html` og `admin.js` er udelukket i `robots.txt`.
+
+## Persondata
+
+Henvendelserne indeholder navn, telefon, mail og fritekst om et barns skolegang.
+Det er personoplysninger, og nogle af dem angår mindreårige. Siden mangler
+fortsat en privatlivspolitik, der beskriver hvad der gemmes, hvor længe og
+hvordan man får sine oplysninger slettet.
+
+## Lokal forhåndsvisning
+
+Kør `python3 -m http.server 8099 --bind 127.0.0.1` fra denne mappe og åbn
+`http://127.0.0.1:8099/`. Porten 8099 er med i edge-funktionens CORS-liste,
+så formularerne også virker lokalt.

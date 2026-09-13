@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Henvendelser — Lokaltutor</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbfaf7;
+      --bg-2: #f5f2eb;
+      --surface: #ffffff;
+      --line: #eae5db;
+      --line-strong: #ddd6c8;
+      --text: #3c382f;
+      --heading: #211e19;
+      --muted: #6f685c;
+      --gold: #d9912c;
+      --gold-2: #9d5c0c;
+      --clay: #9c4a45;
+      --sage: #76856a;
+      --grad-gold: linear-gradient(135deg, #f2be6a 0%, #e0a03c 50%, #c9811a 100%);
+      --shadow-sm: 0 2px 10px rgba(48, 36, 18, 0.05);
+      --shadow-md: 0 12px 36px -10px rgba(48, 36, 18, 0.14);
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body: "Manrope", system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { color: var(--heading); font-family: var(--font-display); font-weight: 600; }
+    :focus-visible { outline: 3px solid var(--gold-2); outline-offset: 3px; }
+    .wrap { width: min(1100px, 100%); margin: 0 auto; padding: 0 clamp(14px, 3vw, 28px); }
+
+    /* ---------- Login ---------- */
+    .login-screen {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .login-card {
+      width: min(400px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      padding: 34px 30px;
+    }
+    .login-card h1 { margin: 0 0 6px; font-size: 1.6rem; }
+    .login-card .sub { margin: 0 0 26px; color: var(--muted); font-size: 0.92rem; }
+    .brand-mark {
+      display: grid; place-items: center;
+      width: 46px; height: 46px; margin-bottom: 18px;
+      border-radius: 13px;
+      background: var(--grad-gold);
+      color: #2a1d04; font-weight: 800;
+      box-shadow: 0 6px 18px -6px rgba(217, 145, 44, 0.55);
+    }
+
+    label.field { display: grid; gap: 7px; margin-bottom: 16px; font-size: 0.85rem; font-weight: 700; color: var(--heading); }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 11px;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--heading);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+    textarea { resize: vertical; min-height: 84px; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(217, 145, 44, 0.16);
+    }
+
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+      font-size: 0.93rem; font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .button-primary { background: var(--grad-gold); color: #2a1d04; box-shadow: 0 8px 22px -8px rgba(217, 145, 44, 0.6); }
+    .button-primary:hover:not(:disabled) { transform: translateY(-1px); }
+    .button-ghost { background: #fff; color: var(--heading); border-color: var(--line-strong); }
+    .button-ghost:hover { border-color: var(--gold); }
+    .button-small { padding: 8px 15px; font-size: 0.84rem; }
+    .button:disabled { opacity: 0.55; cursor: default; }
+    .button.full { width: 100%; }
+
+    .button-link {
+      background: none; border: 0; padding: 0;
+      font-family: var(--font-body); font-size: inherit; font-weight: 700;
+      color: var(--gold-2); text-decoration: underline; cursor: pointer;
+    }
+
+    .notice { margin: 0 0 16px; padding: 11px 14px; border-radius: 11px; font-size: 0.88rem; }
+    .notice-ok { background: #eef5ec; border: 1px solid #c5debf; color: #3f6136; }
+    .notice-error { background: #fdf0ef; border: 1px solid #e8c4c1; color: #8a3b36; }
+    .notice-info { background: #fdf6e9; border: 1px solid #ecd9b4; color: #7d4d0a; }
+
+    /* ---------- Topbar ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(251, 250, 247, 0.9);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 14px; padding-bottom: 14px; }
+    .topbar h1 { margin: 0; font-size: 1.25rem; flex: 1 1 auto; }
+    .topbar .who { color: var(--muted); font-size: 0.84rem; }
+
+    /* ---------- Nøgletal / filtre ---------- */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0 20px; }
+    .stat {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 15px; padding: 15px 17px; text-align: left;
+      cursor: pointer; font-family: var(--font-body);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .stat:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .stat[aria-pressed="true"] { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217, 145, 44, 0.16); }
+    .stat b { display: block; font-family: var(--font-display); font-size: 1.85rem; line-height: 1.1; color: var(--heading); }
+    .stat span { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+    .toolbar select, .toolbar input { width: auto; }
+    .toolbar .grow { flex: 1 1 200px; }
+    .toolbar .spacer { flex: 1 1 auto; }
+
+    /* ---------- Liste ---------- */
+    .lead {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .lead-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) auto auto;
+      gap: 14px; align-items: center;
+      width: 100%;
+      padding: 16px 18px;
+      background: none; border: 0;
+      font-family: var(--font-body); font-size: 1rem;
+      text-align: left; cursor: pointer;
+    }
+    .lead-head:hover { background: var(--bg-2); }
+    .lead-name { font-weight: 700; color: var(--heading); }
+    .lead-sub { font-size: 0.82rem; color: var(--muted); }
+    .lead-contact { font-size: 0.86rem; color: var(--muted); min-width: 0; overflow-wrap: anywhere; }
+    /* Badges er selv grid-celler i rækken — uden dette strækkes de til hele sporet. */
+    .lead-head > .badge { justify-self: start; }
+
+    .badge {
+      display: inline-block; padding: 4px 11px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-hold { background: rgba(118, 133, 106, 0.15); color: #4d5943; border: 1px solid rgba(118, 133, 106, 0.4); }
+    .badge-ene { background: rgba(156, 74, 69, 0.12); color: #843a35; border: 1px solid rgba(156, 74, 69, 0.35); }
+    .badge-forside { background: rgba(217, 145, 44, 0.14); color: var(--gold-2); border: 1px solid rgba(217, 145, 44, 0.4); }
+    .badge-ny { background: var(--grad-gold); color: #2a1d04; }
+    .badge-kontaktet { background: #eef2f7; color: #44546b; border: 1px solid #d3dde8; }
+    .badge-tilmeldt { background: #e9f3e7; color: #3f6136; border: 1px solid #c5debf; }
+    .badge-lukket { background: #f1efea; color: #7a7368; border: 1px solid #ddd6c8; }
+    .repeat-flag { color: var(--clay); font-weight: 700; font-size: 0.78rem; }
+
+    .lead-body { padding: 4px 18px 20px; border-top: 1px solid var(--line); }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 14px; margin: 16px 0; }
+    .detail-grid div { min-width: 0; }
+    .detail-grid dt { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .detail-grid dd { margin: 3px 0 0; font-size: 0.95rem; color: var(--heading); overflow-wrap: anywhere; }
+    .detail-grid a { color: var(--gold-2); }
+    .message-box {
+      background: var(--bg-2); border: 1px solid var(--line);
+      border-radius: 12px; padding: 14px 16px; margin: 4px 0 18px;
+      white-space: pre-wrap; font-size: 0.94rem;
+    }
+    .edit-row { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto; gap: 14px; align-items: end; }
+    .save-state { font-size: 0.85rem; color: var(--sage); font-weight: 700; }
+
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty h2 { font-size: 1.2rem; margin: 0 0 6px; }
+
+    @media (max-width: 760px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .lead-head { grid-template-columns: minmax(0, 1fr) auto; row-gap: 8px; }
+      .lead-contact { grid-column: 1 / -1; }
+      .edit-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Login ===== -->
+  <div class="login-screen" id="login-screen" hidden>
+    <form class="login-card" id="login-form">
+      <div class="brand-mark" aria-hidden="true">MJ</div>
+      <h1>Henvendelser</h1>
+      <p class="sub">Log ind for at se dem, der har skrevet sig op.</p>
+      <p class="notice notice-error" id="login-error" hidden></p>
+      <label class="field">Mailadresse
+        <input type="email" name="email" autocomplete="username" required>
+      </label>
+      <label class="field">Adgangskode
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button class="button button-primary full" type="submit" id="login-button">Log ind</button>
+      <p class="sub" style="margin:18px 0 0; text-align:center">
+        Første gang?
+        <button class="button-link" type="button" id="signup-button">Opret adgang</button>
+      </p>
+    </form>
+  </div>
+
+  <!-- ===== Admin ===== -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <h1>Henvendelser</h1>
+        <span class="who" id="who"></span>
+        <button class="button button-ghost button-small" id="refresh">Opdatér</button>
+        <button class="button button-ghost button-small" id="export">Hent CSV</button>
+        <button class="button button-ghost button-small" id="logout">Log ud</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <p class="notice notice-error" id="app-error" hidden></p>
+
+      <div class="stats" id="stats">
+        <button class="stat" data-status="ny" aria-pressed="false"><b id="count-ny">0</b><span>Nye</span></button>
+        <button class="stat" data-status="kontaktet" aria-pressed="false"><b id="count-kontaktet">0</b><span>Kontaktet</span></button>
+        <button class="stat" data-status="tilmeldt" aria-pressed="false"><b id="count-tilmeldt">0</b><span>Tilmeldt</span></button>
+        <button class="stat" data-status="" aria-pressed="true"><b id="count-alle">0</b><span>I alt</span></button>
+      </div>
+
+      <div class="toolbar">
+        <label class="field" style="margin:0">
+          <span class="sr-only" hidden>Formular</span>
+          <select id="filter-source">
+            <option value="">Alle formularer</option>
+            <option value="hold">Holdundervisning</option>
+            <option value="ene">1:1-undervisning</option>
+            <option value="forside">Forsiden</option>
+          </select>
+        </label>
+        <label class="field grow" style="margin:0">
+          <input type="search" id="filter-search" placeholder="Søg i navn, mail, telefon, fag eller besked">
+        </label>
+      </div>
+
+      <div id="list"></div>
+
+      <div class="empty" id="empty" hidden>
+        <h2>Ingen henvendelser her</h2>
+        <p>Prøv et andet filter, eller vent på den næste tilmelding.</p>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
