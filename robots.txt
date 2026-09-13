@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
-Sitemap: https://markusmj2256.github.io/tutor/sitemap.xml
+Disallow: /
