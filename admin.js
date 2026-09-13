@@ -7,7 +7,7 @@
  * Alt indhold fra formularerne indsættes med textContent, aldrig innerHTML,
  * så en indsendt besked ikke kan køre kode på denne side. */
 
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/+esm";
 
 const SUPABASE_URL = "https://kslmcjkyhxdevdfyzzrb.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -34,6 +34,8 @@ const STATUS_LABEL = {
 };
 
 let leads = [];
+let flyerRows = [];
+let leadFlyers = new Map();
 let filterStatus = "";
 const openRows = new Set();
 
@@ -120,6 +122,9 @@ $("signup-button").addEventListener("click", async () => {
 $("logout").addEventListener("click", async () => {
   await supabase.auth.signOut();
   leads = [];
+  flyerRows = [];
+  leadFlyers.clear();
+  $("flyer-results").replaceChildren();
   app.hidden = true;
   loginScreen.hidden = false;
 });
@@ -165,7 +170,11 @@ async function load() {
     return;
   }
   leads = data ?? [];
+  const attribution = await supabase.from("tutor_lead_flyers").select("*");
+  leadFlyers = new Map((attribution.data ?? []).map((row) => [row.lead_id, row]));
+  if (attribution.error) showError(appError, "Henvendelserne er hentet, men flyerkilderne kunne ikke hentes. Prøv Opdatér.");
   render();
+  await loadFlyers();
 }
 
 $("refresh").addEventListener("click", load);
@@ -173,6 +182,7 @@ $("refresh").addEventListener("click", load);
 /* ---------- Filtrering og visning ---------- */
 
 $("filter-source").addEventListener("change", render);
+$("filter-flyer").addEventListener("change", render);
 $("filter-search").addEventListener("input", render);
 
 $("stats").addEventListener("click", (event) => {
@@ -188,6 +198,10 @@ function visibleLeads() {
   const source = $("filter-source").value;
   const term = $("filter-search").value.trim().toLowerCase();
   return leads.filter((lead) => {
+    const flyer = $("filter-flyer").value;
+    const attributed = leadFlyers.get(lead.id);
+    if (flyer === "none" && attributed) return false;
+    if (flyer && flyer !== "none" && attributed?.flyer_id !== flyer) return false;
     if (filterStatus && lead.status !== filterStatus) return false;
     if (source && lead.source !== source) return false;
     if (!term) return true;
@@ -223,6 +237,8 @@ function renderLead(lead) {
   const who = el("div");
   who.append(el("div", "lead-name", lead.name || "Uden navn"));
   const sub = el("div", "lead-sub", formatDate(lead.created_at));
+  const attribution = leadFlyers.get(lead.id);
+  if (attribution) sub.append(" · ", attribution.flyer_name);
   if ((lead.submissions ?? 1) > 1) {
     sub.append(" · ", el("span", "repeat-flag", `skrev ${lead.submissions} gange`));
   }
@@ -254,6 +270,7 @@ function renderLead(lead) {
     ["Fag", lead.subject],
     ["Pakke", lead.package],
     ["Formular", SOURCE_LABEL[lead.source] ?? lead.source],
+    ["Flyer", leadFlyers.get(lead.id)?.flyer_name ?? "Ingen registreret flyer"],
     ["Modtaget", formatDate(lead.created_at)],
     ["Senest opdateret", formatDate(lead.updated_at)],
   ];
@@ -325,6 +342,7 @@ function renderLead(lead) {
     saveState.textContent = "Gemt";
     lead.status = statusSelect.value;
     lead.notes = notesInput.value.trim() || null;
+    await loadFlyers();
     setTimeout(render, 700);
   });
 
@@ -340,6 +358,7 @@ $("export").addEventListener("click", () => {
   const columns = [
     ["Modtaget", (l) => formatDate(l.created_at)],
     ["Formular", (l) => SOURCE_LABEL[l.source] ?? l.source],
+    ["Flyer", (l) => leadFlyers.get(l.id)?.flyer_name],
     ["Status", (l) => STATUS_LABEL[l.status] ?? l.status],
     ["Navn", (l) => l.name],
     ["Telefon", (l) => l.phone],
@@ -366,6 +385,60 @@ $("export").addEventListener("click", () => {
   link.download = `henvendelser-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
+});
+
+/* ---------- Flyer funnel ---------- */
+let flyerRequest = 0;
+const percent = (value) => value == null ? "—" : `${Number(value).toLocaleString("da-DK", { maximumFractionDigits: 1 })} %`;
+async function loadFlyers() {
+  const request = ++flyerRequest;
+  const days = $("flyer-period").value;
+  $("flyer-message").textContent = "Henter flyerdata…";
+  $("flyer-export").disabled = true;
+  const { data, error } = await supabase.rpc("tutor_flyer_report", { p_days: days ? Number(days) : null });
+  if (request !== flyerRequest) return;
+  if (error) {
+    flyerRows = [];
+    $("flyer-results").replaceChildren();
+    $("flyer-message").textContent = `Flyerdata kunne ikke hentes: ${error.message}. Prøv Opdatér.`;
+    return;
+  }
+  flyerRows = data ?? [];
+  $("flyer-results").replaceChildren(...flyerRows.map((row) => {
+    const tr = el("tr");
+    const name = el("td");
+    name.append(el("div", "flyer-name", row.name));
+    const link = el("a", null, "Åbn testlink ↗");
+    const url = new URL(row.landing_path, "https://lokaltutor.vercel.app");
+    url.searchParams.set("flyer", row.flyer_id);
+    url.searchParams.set("tracking_test", "1");
+    link.href = url.href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    name.append(link);
+    tr.append(name, ...[row.visits, row.new_leads, percent(row.contact_rate), row.enrolled_leads, percent(row.enrollment_rate)].map((v) => el("td", null, String(v))));
+    return tr;
+  }));
+  const filter = $("filter-flyer");
+  const selected = filter.value;
+  filter.replaceChildren(...[["", "Alle flyers / øvrige"], ["none", "Uden flyer"], ...flyerRows.map((r) => [r.flyer_id, r.name])].map(([id, label]) => {
+    const option = el("option", null, label); option.value = id; return option;
+  }));
+  filter.value = selected;
+  $("flyer-message").textContent = flyerRows.some((r) => Number(r.visits) > 0)
+    ? "Sammenlign raterne sammen med antal besøg. Et lille antal besøg kan give store udsving."
+    : "Ingen registrerede flyerbesøg i perioden endnu. Testlinks nedenfor tæller ikke med.";
+  $("flyer-export").disabled = false;
+}
+$("flyer-period").addEventListener("change", loadFlyers);
+$("flyer-export").addEventListener("click", () => {
+  const rows = [["Flyer", "Kode", "Besøgsperiode (dage)", "Besøg", "Nye henvendelser", "Konverterede besøg", "Kontakt-rate (%)", "Tilmeldte", "Besøg med tilmelding", "Tilmeldingsrate (%)"],
+    ...flyerRows.map((r) => [r.name, r.flyer_id, $("flyer-period").value || "Alle", r.visits, r.new_leads, r.converted_visits, r.contact_rate, r.enrolled_leads, r.enrolled_visits, r.enrollment_rate])];
+  const csv = rows.map((row) => row.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(";")).join("\r\n");
+  const url = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+  const link = el("a"); link.href = url;
+  link.download = `flyer-resultater-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click(); URL.revokeObjectURL(url);
 });
 
 /* ---------- Start ---------- */

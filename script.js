@@ -210,6 +210,8 @@
   const CONTACT_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzbG1jamt5aHhkZXZkZnl6enJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0Mzc4NDIsImV4cCI6MjEwMTAxMzg0Mn0.lP-uPzYevRcKCos3wOQVB56XjrDgWrHqXJtSt1x-300";
 
+  const flyerTracking = window.TutorFlyerTracking?.init(CONTACT_ENDPOINT, CONTACT_KEY);
+
   const setupContactForm = (form, source) => {
     if (!form) return;
     // Tidspunktet formularen blev vist. En indsendelse under to sekunder
@@ -251,6 +253,7 @@
       feedback.hidden = true;
 
       try {
+        const attribution = await flyerTracking?.attribution() ?? {};
         const response = await fetch(CONTACT_ENDPOINT, {
           method: "POST",
           headers: {
@@ -258,6 +261,7 @@
             Authorization: `Bearer ${CONTACT_KEY}`,
           },
           body: JSON.stringify({
+            ...attribution,
             source,
             name: get("name"),
             phone: get("phone"),

@@ -7,6 +7,9 @@ Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
 - `admin.html` / `admin.js` — intern side med indkomne henvendelser
+- `flyer-tracking.js` — flyerbesøg og attribution på tværs af sider
+- `supabase/` — versionsstyret kontaktfunktion, flyermigration og databasetest
+- `docs/flyer-tracking.md` — links, måledefinitioner, adgang og test
 - `styles.css` / `script.js` — fælles design og interaktion på alle tre sider
 - `assets/` — optimerede fotos
 - `assets/photos/` — fotosessionen (webp + jpg, beskårne i flere størrelser)
@@ -71,6 +74,14 @@ Siden kan filtrere på formular og status, søge i alle felter, sætte status
 Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.
 
 `admin.html` og `admin.js` er udelukket i `robots.txt`.
+
+## Flyertrafik
+
+Fem flyer-varianter har hver sit permanente kampagne-ID og korte QR-link fra
+`/f/f1` til `/f/f5`. Vercel sender videre til den relevante landingsside.
+Flyerbesøg og nye henvendelser kobles i Supabase. Admin viser besøg, kontakt-rate
+og tilmeldingsrate med periodevalg, filtre og CSV. Tilmeldinger følger manuelt
+statusfeltet på henvendelserne. Se [flyervejledningen](docs/flyer-tracking.md).
 
 ## Persondata
 

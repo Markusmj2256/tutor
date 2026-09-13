@@ -149,6 +149,16 @@
     .toolbar .grow { flex: 1 1 200px; }
     .toolbar .spacer { flex: 1 1 auto; }
 
+    .flyer-panel { margin: 24px 0; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+    .flyer-panel h2 { margin: 0; }
+    .flyer-panel p { color: var(--muted); font-size: .86rem; }
+    .flyer-table-wrap { overflow-x: auto; }
+    .flyer-table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+    .flyer-table th, .flyer-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+    .flyer-table th:first-child, .flyer-table td:first-child { text-align: left; }
+    .flyer-table th { color: var(--muted); font-size: .75rem; }
+    .flyer-table a { color: var(--gold-2); }
+    .flyer-table .flyer-name { font-weight: 700; color: var(--heading); }
     /* ---------- Liste ---------- */
     .lead {
       background: var(--surface);
@@ -252,6 +262,31 @@
     <main class="wrap">
       <p class="notice notice-error" id="app-error" hidden></p>
 
+      <section class="flyer-panel" aria-labelledby="flyer-title">
+        <div class="toolbar">
+          <h2 id="flyer-title" class="grow">Hvilke flyers virker?</h2>
+          <label class="field" style="margin:0">Besøg i perioden
+            <select id="flyer-period">
+              <option value="30">Seneste 30 dage</option>
+              <option value="90">Seneste 90 dage</option>
+              <option value="">Hele perioden</option>
+            </select>
+          </label>
+          <button class="button button-ghost button-small" id="flyer-export">Hent flyer-CSV</button>
+        </div>
+        <p id="flyer-message" role="status">Henter flyerdata…</p>
+        <div class="flyer-table-wrap" tabindex="0" role="region" aria-label="Resultater per flyer">
+          <table class="flyer-table">
+            <thead><tr><th scope="col">Flyer</th><th scope="col">Besøg</th><th scope="col">Nye henvendelser</th><th scope="col">Kontakt-rate</th><th scope="col">Tilmeldte</th><th scope="col">Tilmeldingsrate</th></tr></thead>
+            <tbody id="flyer-results"></tbody>
+          </table>
+        </div>
+        <details><summary>Sådan beregnes tallene</summary>
+        <p>Kontakt-rate er andelen af besøg, der fører til mindst én ny, gemt henvendelse. Gentagne indsendelser tæller ikke ekstra. Tilmeldinger følger status “Tilmeldt” nedenfor. Raterne bruger besøg i den valgte periode, også hvis en tilmelding sker senere.</p>
+        <p>Besøg er registrerede forløb fra flyer-links, ikke unikke personer eller alle fysiske scanninger. Koden følger interne links i op til 24 timer. Opkald, SMS, mails og senere direkte besøg tilskrives ikke automatisk. Testbesøg er udeladt. Sammenlign også antal uddelte flyers og fordelingssteder, før du vælger en vinder.</p>
+        </details>
+      </section>
+
       <div class="stats" id="stats">
         <button class="stat" data-status="ny" aria-pressed="false"><b id="count-ny">0</b><span>Nye</span></button>
         <button class="stat" data-status="kontaktet" aria-pressed="false"><b id="count-kontaktet">0</b><span>Kontaktet</span></button>
@@ -260,6 +295,9 @@
       </div>
 
       <div class="toolbar">
+        <label class="field" style="margin:0">Flyer
+          <select id="filter-flyer"><option value="">Alle flyers / øvrige</option><option value="none">Uden flyer</option></select>
+        </label>
         <label class="field" style="margin:0">
           <span class="sr-only" hidden>Formular</span>
           <select id="filter-source">
