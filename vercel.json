@@ -1,9 +1,0 @@
-{
-  "redirects": [
-    { "source": "/f/f1", "destination": "/?flyer=f1", "permanent": false },
-    { "source": "/f/f2", "destination": "/?flyer=f2", "permanent": false },
-    { "source": "/f/f3", "destination": "/?flyer=f3", "permanent": false },
-    { "source": "/f/f4", "destination": "/eneundervisning.html?flyer=f4", "permanent": false },
-    { "source": "/f/f5", "destination": "/holdundervisning.html?flyer=f5", "permanent": false }
-  ]
-}

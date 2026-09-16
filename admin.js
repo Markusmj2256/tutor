@@ -409,7 +409,9 @@ async function loadFlyers() {
     const name = el("td");
     name.append(el("div", "flyer-name", row.name));
     const link = el("a", null, "Åbn testlink ↗");
-    const url = new URL(row.landing_path, "https://lokaltutor.vercel.app");
+    // Bygges mod den side admin-siden selv kører på, så testlinket følger
+    // med ved et hostingskifte og virker automatisk på lokaltutor.dk.
+    const url = new URL(row.landing_path, location.origin);
     url.searchParams.set("flyer", row.flyer_id);
     url.searchParams.set("tracking_test", "1");
     link.href = url.href;

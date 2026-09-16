@@ -1,27 +1,27 @@
 # Flyertrafik og konvertering
 
-Produktion: https://lokaltutor.vercel.app · GitHub: Markusmj2256/tutor, main.
-Vercel-projekt: johsens/lokaltutor. Supabase: kslmcjkyhxdevdfyzzrb.
+Produktion: https://lokaltutor.pages.dev · GitHub: Markusmj2256/tutor, main.
+Cloudflare Pages-projekt: lokaltutor. Supabase: kslmcjkyhxdevdfyzzrb.
 Statisk HTML/CSS/JS er bevaret. Kontakt-backenden er udvidet, ikke erstattet.
 
 ## Links (genbrug aldrig en kode til et andet design)
 
 | Kode | Flyer | QR-destination | Landingsside |
 | --- | --- | --- | --- |
-| f1 | 01 · Mere ro | https://lokaltutor.vercel.app/f/f1 | Forside |
-| f2 | 02 · Styr på matematikken | https://lokaltutor.vercel.app/f/f2 | Forside |
-| f3 | 03 · Tryghed til at spørge | https://lokaltutor.vercel.app/f/f3 | Forside |
-| f4 | 04 · 1:1-undervisning | https://lokaltutor.vercel.app/f/f4 | 1:1 |
-| f5 | 05 · Holdundervisning | https://lokaltutor.vercel.app/f/f5 | Hold |
+| f1 | 01 · Mere ro | https://lokaltutor.pages.dev/f/f1 | Forside |
+| f2 | 02 · Styr på matematikken | https://lokaltutor.pages.dev/f/f2 | Forside |
+| f3 | 03 · Tryghed til at spørge | https://lokaltutor.pages.dev/f/f3 | Forside |
+| f4 | 04 · 1:1-undervisning | https://lokaltutor.pages.dev/f/f4 | 1:1 |
+| f5 | 05 · Holdundervisning | https://lokaltutor.pages.dev/f/f5 | Hold |
 
-Vercel laver midlertidige redirects fra de korte links til sider med `?flyer=f1`
+Cloudflare laver midlertidige redirects (via `_redirects`) fra de korte links til sider med `?flyer=f1`
 osv. Det gør det muligt at ændre landingssiden senere uden at genoptrykke QR.
 Flyer-originaler, SVG-koder, PDF'er og linkmanifest ligger lokalt i `Flyers/`.
 Gamle tryksager med samme fælles QR kan ikke identificeres pr. variant bagudrettet.
 
 ## Se resultater
 
-Log ind på https://lokaltutor.vercel.app/admin.html. Den nye sektion viser fem
+Log ind på https://lokaltutor.pages.dev/admin. Den nye sektion viser fem
 flyers med besøg, nye henvendelser, kontakt-rate, tilmeldte og tilmeldingsrate.
 Vælg 30 dage, 90 dage eller alle datoer. Hent flyer-CSV for at sammenligne i Excel.
 Henvendelseslisten har et flyerfilter, og flyer-navnet indgår også i lead-CSV.

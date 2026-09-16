@@ -32,26 +32,23 @@ gren `main`, ingen byggekommando, output `/`). Nye commits publiceres automatisk
 | Adresse | Rolle |
 | --- | --- |
 | `lokaltutor.pages.dev` | Produktion. Canonical peger hertil. |
-| `lokaltutor.vercel.app` | Kører fortsat, fordi QR-koderne på de trykte flyers peger på `/f/f1` … `/f/f5` her. Slettes først når flyers er trykt om. |
 | `markusmj2256.github.io/tutor` | Viderestiller til Cloudflare. |
 
 Cloudflares gratisplan tillader udtrykkeligt kommerciel brug, i modsætning til
-Vercels Hobby-plan.
+Vercels Hobby-plan. Vercel-projektet er sat på pause og bruges ikke længere;
+`vercel.json` er fjernet fra repoet.
 
-Siden er ren statisk — al backend ligger i Supabase — så den kan hostes hvor som
-helst. Værtsspecifik konfiguration ligger side om side i repoet, og hver vært
-ignorerer de andres filer:
+Værtsspecifik konfiguration ligger i repoet, og andre værter ignorerer den:
 
 | Fil | Læses af |
 | --- | --- |
 | `_headers`, `_redirects` | Cloudflare Pages |
-| `vercel.json` | Vercel |
 | `.nojekyll` | GitHub Pages |
 
 ### Stier uden .html
 
 Cloudflare Pages serverer `/holdundervisning` og sender `/holdundervisning.html`
-videre dertil med en 308. Vercel og GitHub Pages bruger endelsen. Al kode, der
+videre dertil med en 308. GitHub Pages bruger endelsen. Al kode, der
 sammenligner stier — flyersporingen i klienten, edge-funktionen og
 `register_tutor_flyer_visit` — godtager derfor begge former og gemmer kun den
 korte, så rapporterne ikke deles i to sæt hen over et hostingskifte.
@@ -60,8 +57,10 @@ korte, så rapporterne ikke deles i to sæt hen over et hostingskifte.
 
 `/f/f1` … `/f/f5` sender videre til forsiden eller en undervisningsside med
 `?flyer=…`. **QR-koderne på de trykte flyers peger på disse adresser.** De skal
-defineres på hver vært for sig: `vercel.json` for Vercel, `_redirects` for
-Cloudflare. Glemmes den ene, giver hver eneste QR-kode 404.
+defineres i `_redirects`. Glemmes den, giver hver eneste QR-kode 404.
+
+De trykte flyers peger fortsat på det gamle Vercel-domæne og skal trykkes om,
+før de deles ud igen.
 
 ## Backend — henvendelser
 
@@ -105,7 +104,7 @@ Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.
 ## Flyertrafik
 
 Fem flyer-varianter har hver sit permanente kampagne-ID og korte QR-link fra
-`/f/f1` til `/f/f5`. Vercel sender videre til den relevante landingsside.
+`/f/f1` til `/f/f5`. Cloudflare sender videre til den relevante landingsside.
 Flyerbesøg og nye henvendelser kobles i Supabase. Admin viser besøg, kontakt-rate
 og tilmeldingsrate med periodevalg, filtre og CSV. Tilmeldinger følger manuelt
 statusfeltet på henvendelserne. Se [flyervejledningen](docs/flyer-tracking.md).
@@ -144,8 +143,6 @@ ville kilden forsvinde før henvendelsen.
 
 Databehandleraftaler skal accepteres hos Supabase, Resend og Cloudflare. De er
 nævnt som databehandlere i politikken, men aftalerne er ikke indgået endnu.
-Privatlivspolitikken nævner fortsat Vercel som hostingleverandør; det skal
-rettes til Cloudflare, når Vercel lukkes ned.
 
 Når `lokaltutor.dk` går i luften: giv `lokaltutor.pages.dev` `X-Robots-Tag:
 noindex` i `_headers`, ellers indekserer Google to identiske sider. Gør det
