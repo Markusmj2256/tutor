@@ -7,6 +7,7 @@ Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
 - `admin.html` / `admin.js` — intern side med indkomne henvendelser
+- `privatliv.html` — privatlivspolitik
 - `flyer-tracking.js` — flyerbesøg og attribution på tværs af sider
 - `supabase/` — versionsstyret kontaktfunktion, flyermigration og databasetest
 - `docs/flyer-tracking.md` — links, måledefinitioner, adgang og test
@@ -83,12 +84,40 @@ Flyerbesøg og nye henvendelser kobles i Supabase. Admin viser besøg, kontakt-r
 og tilmeldingsrate med periodevalg, filtre og CSV. Tilmeldinger følger manuelt
 statusfeltet på henvendelserne. Se [flyervejledningen](docs/flyer-tracking.md).
 
-## Persondata
+## Persondata og GDPR
 
-Henvendelserne indeholder navn, telefon, mail og fritekst om et barns skolegang.
-Det er personoplysninger, og nogle af dem angår mindreårige. Siden mangler
-fortsat en privatlivspolitik, der beskriver hvad der gemmes, hvor længe og
-hvordan man får sine oplysninger slettet.
+`privatliv.html` beskriver hvad der gemmes, hvorfor, hvor længe og hvordan man
+får det slettet. Den er linket fra alle footere og fra hver formular.
+
+**Der er ingen cookies og ingen lagring på de besøgendes enheder.** Derfor er
+der heller ikke brug for et cookiebanner. Det er kontrolleret: de offentlige
+sider laver nul kald til tredjeparter.
+
+Skrifttyperne lå før på `fonts.googleapis.com`, hvilket sendte hver besøgendes
+IP-adresse til Google. De ligger nu i `assets/fonts/` og indlæses via
+`assets/fonts.css`, så intet forlader domænet.
+
+Flyersporingen bruger et tilfældigt besøgs-id, der kun lever i adresselinjen
+under besøget. Der gemmes ingen rå IP-adresser — kun saltede hash.
+
+### Slettefrister
+
+Håndhæves af databasen, ikke af hukommelsen. `public.slet_udloebne_persondata()`
+kører hver nat kl. 03.30 UTC via pg_cron (job `slet-udloebne-persondata`).
+
+| Data | Slettes efter |
+| --- | --- |
+| `tutor_leads` | 24 måneder efter `updated_at` |
+| `tutor_flyer_visits` | 12 måneder, kun besøg uden tilknyttet henvendelse |
+| `tutor_submit_log` | 30 dage |
+
+Besøg med en henvendelse bevares, indtil henvendelsen selv slettes — ellers
+ville kilden forsvinde før henvendelsen.
+
+### Udestående
+
+Databehandleraftaler skal accepteres hos Supabase, Resend og Vercel. De er
+nævnt som databehandlere i politikken, men aftalerne er ikke indgået endnu.
 
 ## Lokal forhåndsvisning
 

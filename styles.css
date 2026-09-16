@@ -1161,3 +1161,77 @@ h1 em, .section-title em {
   overflow: hidden;
   margin: 0;
 }
+
+/* ---------- Privatlivspolitik ---------- */
+.legal-page { padding-top: calc(var(--header-h) + clamp(40px, 6vw, 72px)); }
+.legal-page h1.section-title { margin-bottom: 26px; }
+
+.legal-lead {
+  margin: 0 0 14px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  font-size: 1.04rem;
+  color: var(--heading);
+}
+.legal-updated {
+  margin: 0 0 44px;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.legal-page h2 {
+  margin: 46px 0 14px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  line-height: 1.25;
+}
+.legal-page h3 {
+  margin: 30px 0 10px;
+  font-size: 1.04rem;
+  font-weight: 700;
+}
+.legal-page p { color: var(--text); }
+.legal-page ul { margin: 0 0 18px; padding-left: 22px; color: var(--text); }
+.legal-page li { margin-bottom: 7px; }
+.legal-page a { color: var(--gold-2); }
+
+.legal-contact { list-style: none; padding-left: 0; }
+
+/* Tabellerne skal kunne rulle vandret på en telefon i stedet for at
+   presse hele siden ud i bredden. */
+.legal-table-wrap { overflow-x: auto; margin: 0 0 20px; }
+.legal-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 460px;
+  font-size: 0.92rem;
+}
+.legal-table th, .legal-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.legal-table th {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom-color: var(--line-strong);
+}
+.legal-table tbody tr:last-child td { border-bottom: 0; }
+
+.legal-callout {
+  margin: 22px 0;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: linear-gradient(150deg, #fdf4e3, var(--surface) 65%);
+  border: 1px solid rgba(217, 145, 44, 0.35);
+}
+
+/* Diskret link til politikken under formularerne. */
+.form-note .privacy-link { white-space: nowrap; }
