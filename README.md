@@ -26,17 +26,30 @@ scrollanimationer og formularer deler styling og JavaScript.
 
 ## Hosting
 
-Siden hostes på **Vercel** og udgives automatisk ved push til `main`.
+Siden er ren statisk — al backend ligger i Supabase — så den kan hostes hvor som
+helst. Værtsspecifik konfiguration ligger side om side i repoet, og hver vært
+ignorerer de andres filer:
 
-- Produktion: https://lokaltutor.vercel.app
-- Projekt: `johsens/lokaltutor`, koblet til `Markusmj2256/tutor`
+| Fil | Læses af |
+| --- | --- |
+| `_headers`, `_redirects` | Cloudflare Pages |
+| `vercel.json` | Vercel |
+| `.nojekyll` | GitHub Pages |
 
-`gh-pages` viderestiller nu til Vercel, så QR-koder på allerede trykte flyers
-stadig virker. Den gren indeholder ikke længere selve siden.
+### Stier uden .html
 
-Bemærk: Vercels Hobby-plan er til ikke-kommerciel brug. Undervisning mod betaling
-er kommercielt, så planen bør opgraderes, inden der kommer betalende kunder ind
-via siden.
+Cloudflare Pages serverer `/holdundervisning` og sender `/holdundervisning.html`
+videre dertil med en 308. Vercel og GitHub Pages bruger endelsen. Al kode, der
+sammenligner stier — flyersporingen i klienten, edge-funktionen og
+`register_tutor_flyer_visit` — godtager derfor begge former og gemmer kun den
+korte, så rapporterne ikke deles i to sæt hen over et hostingskifte.
+
+### Korte flyer-adresser
+
+`/f/f1` … `/f/f5` sender videre til forsiden eller en undervisningsside med
+`?flyer=…`. **QR-koderne på de trykte flyers peger på disse adresser.** De skal
+defineres på hver vært for sig: `vercel.json` for Vercel, `_redirects` for
+Cloudflare. Glemmes den ene, giver hver eneste QR-kode 404.
 
 ## Backend — henvendelser
 

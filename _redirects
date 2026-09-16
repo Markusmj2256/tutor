@@ -1,0 +1,11 @@
+# Korte flyer-adresser. QR-koderne på de trykte flyers peger på /f/f1 … /f/f5,
+# så disse linjer SKAL findes, ellers giver hver eneste QR-kode 404.
+#
+# Modsvarer redirects-blokken i vercel.json, som Cloudflare ikke læser.
+# Målene står uden .html, fordi Cloudflare Pages serverer stierne sådan.
+
+/f/f1  /?flyer=f1  302
+/f/f2  /?flyer=f2  302
+/f/f3  /?flyer=f3  302
+/f/f4  /eneundervisning?flyer=f4  302
+/f/f5  /holdundervisning?flyer=f5  302
