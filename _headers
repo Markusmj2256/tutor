@@ -1,0 +1,25 @@
+# Cloudflare Pages læser denne fil. Vercel og GitHub Pages ignorerer den,
+# så den kan ligge i repoet uanset hvor siden hostes.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Fonte og fotos har indhold, der aldrig ændrer sig under samme filnavn.
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/photos/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Admin-siden må aldrig mellemlagres eller vises i en ramme.
+/admin
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+
+/admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow

@@ -4,7 +4,19 @@
 (() => {
   "use strict";
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const PAGES = new Set(["/", "/index.html", "/eneundervisning.html", "/holdundervisning.html"]);
+  // Cloudflare Pages serverer /holdundervisning og sender /holdundervisning.html
+  // videre dertil, mens andre værter bruger endelsen. Begge former godtages, så
+  // sporingen overlever et hostingskifte.
+  const PAGES = new Set([
+    "/", "/index", "/index.html",
+    "/eneundervisning", "/eneundervisning.html",
+    "/holdundervisning", "/holdundervisning.html",
+  ]);
+  // Én skrivemåde sendes til serveren, så rapporterne ikke splittes i to.
+  const canonicalPath = (p) => {
+    const bare = p.replace(/\.html$/, "");
+    return bare === "" || bare === "/index" ? "/" : bare;
+  };
 
   window.TutorFlyerTracking = {
     init(endpoint, key) {
@@ -41,7 +53,7 @@
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
             signal: AbortSignal.timeout(2500),
             body: JSON.stringify({ action: "flyer_visit", flyer_id: flyer,
-              visit_id: visit, landing_path: url.pathname, is_test: isTest }),
+              visit_id: visit, landing_path: canonicalPath(url.pathname), is_test: isTest }),
           });
           const result = await response.json();
           if (!response.ok) return false;

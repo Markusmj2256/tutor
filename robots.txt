@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+# Cloudflare Pages serverer siderne uden .html-endelse; begge former lukkes ude.
+Disallow: /admin
 Disallow: /admin.html
 Disallow: /admin.js
 
