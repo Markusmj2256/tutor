@@ -2,7 +2,7 @@
 
 Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte & Lyngby.
 
-- Live: https://lokaltutor.vercel.app
+- Live: https://lokaltutor.pages.dev
 - `index.html` — forside med undervisningsformer, priser, erfaring og kontakt
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
@@ -25,6 +25,18 @@ undervisningsfotos i responsive WebP/JPG-versioner. Navigation, mobilmenu,
 scrollanimationer og formularer deler styling og JavaScript.
 
 ## Hosting
+
+Siden kører på **Cloudflare Pages** (`lokaltutor`, koblet til `Markusmj2256/tutor`,
+gren `main`, ingen byggekommando, output `/`). Nye commits publiceres automatisk.
+
+| Adresse | Rolle |
+| --- | --- |
+| `lokaltutor.pages.dev` | Produktion. Canonical peger hertil. |
+| `lokaltutor.vercel.app` | Kører fortsat, fordi QR-koderne på de trykte flyers peger på `/f/f1` … `/f/f5` her. Slettes først når flyers er trykt om. |
+| `markusmj2256.github.io/tutor` | Viderestiller til Cloudflare. |
+
+Cloudflares gratisplan tillader udtrykkeligt kommerciel brug, i modsætning til
+Vercels Hobby-plan.
 
 Siden er ren statisk — al backend ligger i Supabase — så den kan hostes hvor som
 helst. Værtsspecifik konfiguration ligger side om side i repoet, og hver vært
@@ -87,7 +99,8 @@ Siden kan filtrere på formular og status, søge i alle felter, sætte status
 (ny, kontaktet, tilmeldt, lukket), gemme egne noter og hente en CSV til Excel.
 Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.
 
-`admin.html` og `admin.js` er udelukket i `robots.txt`.
+`admin.html` og `admin.js` er udelukket i `robots.txt`, og `_headers` sætter
+`no-store` og `X-Robots-Tag: noindex` på `/admin`.
 
 ## Flyertrafik
 
@@ -129,8 +142,14 @@ ville kilden forsvinde før henvendelsen.
 
 ### Udestående
 
-Databehandleraftaler skal accepteres hos Supabase, Resend og Vercel. De er
+Databehandleraftaler skal accepteres hos Supabase, Resend og Cloudflare. De er
 nævnt som databehandlere i politikken, men aftalerne er ikke indgået endnu.
+Privatlivspolitikken nævner fortsat Vercel som hostingleverandør; det skal
+rettes til Cloudflare, når Vercel lukkes ned.
+
+Når `lokaltutor.dk` går i luften: giv `lokaltutor.pages.dev` `X-Robots-Tag:
+noindex` i `_headers`, ellers indekserer Google to identiske sider. Gør det
+ikke før — så afindekseres hele siden.
 
 ## Lokal forhåndsvisning
 
