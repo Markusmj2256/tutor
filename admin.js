@@ -81,16 +81,48 @@ loginForm.addEventListener("submit", async (event) => {
   loginButton.textContent = "Log ind";
 
   if (error) {
+    // En konto, hvis bekræftelseslink aldrig blev klikket, kan ikke logge ind.
+    // Linket udløber, så uden en ny mail sidder man fast — derfor knappen.
+    const unconfirmed = error.code === "email_not_confirmed" || /not confirmed/i.test(error.message);
+    $("resend-wrap").hidden = !unconfirmed;
     showError(
       loginError,
-      error.message === "Invalid login credentials"
-        ? "Forkert mailadresse eller adgangskode."
-        : `Kunne ikke logge ind: ${error.message}`,
+      unconfirmed
+        ? "Kontoen er ikke bekræftet endnu. Send en ny bekræftelsesmail, klik linket i den, og log så ind."
+        : error.message === "Invalid login credentials"
+          ? "Forkert mailadresse eller adgangskode."
+          : `Kunne ikke logge ind: ${error.message}`,
     );
     return;
   }
+  $("resend-wrap").hidden = true;
   loginForm.reset();
   await start();
+});
+
+$("resend-button").addEventListener("click", async () => {
+  const email = String(new FormData(loginForm).get("email") || "").trim();
+  if (!email) {
+    showError(loginError, "Skriv din mailadresse ovenfor først.");
+    return;
+  }
+  const button = $("resend-button");
+  button.disabled = true;
+  // Efter bekræftelsen sendes man tilbage hertil. Står adressen ikke på
+  // Supabase' liste over tilladte adresser, lander man på projektets Site URL —
+  // kontoen er bekræftet alligevel.
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${location.origin}/admin` },
+  });
+  button.disabled = false;
+  if (error) {
+    showError(loginError, `Kunne ikke sende mailen: ${error.message}`);
+    return;
+  }
+  $("resend-wrap").hidden = true;
+  showError(loginError, `Ny bekræftelsesmail sendt til ${email}. Klik linket i den, og log så ind her.`, "ok");
 });
 
 // Første gang skal kontoen oprettes. Det er ufarligt at lade knappen stå:
