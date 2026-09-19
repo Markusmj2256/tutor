@@ -17,7 +17,7 @@
   <meta name="theme-color" content="#fbfaf7">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/fonts.css">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <noscript><style>.reveal, .reveal-stagger > * { opacity: 1; transform: none; } #other-subject-field, #free-hold-note { display: block !important; }</style></noscript>
 </head>
 <body>
@@ -303,7 +303,27 @@
     <a class="button button-ghost" href="tel:+4524259986">Ring</a>
     <a class="button button-primary" href="#kontakt">Ansøg om plads</a>
   </div>
+  <!-- Kvittering: vises når en formular er sendt afsted -->
+  <dialog class="thanks" id="thanks" aria-labelledby="thanks-title">
+    <div class="thanks-inner">
+      <figure class="thanks-photo">
+        <picture>
+          <source type="image/webp" srcset="assets/photos/hero-laugh-900.webp">
+          <img src="assets/photos/hero-laugh-900.jpg" alt="Markus Johnsen og en elev griner sammen over en opgave" width="900" height="720">
+        </picture>
+      </figure>
+      <div class="thanks-body">
+        <span class="thanks-check" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+        </span>
+        <h2 id="thanks-title">Tusind tak for interessen</h2>
+        <p>Jeg vil kontakte jer hurtigst muligt.</p>
+        <button class="button button-primary full" type="button" data-thanks-close>Luk</button>
+      </div>
+    </div>
+  </dialog>
+
   <script src="flyer-tracking.js?v=2"></script>
-  <script src="script.js?v=6"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

@@ -246,6 +246,24 @@
 
   const flyerTracking = window.TutorFlyerTracking?.init(CONTACT_ENDPOINT, CONTACT_KEY);
 
+  /* ---------- Kvittering efter indsendt formular ---------- */
+  // Et <dialog> klarer selv Escape, fokuslås og baggrundsdæmpning. Vi tilføjer
+  // kun klik-uden-for. Scroll-låsen bag vinduet styres af CSS ud fra [open],
+  // så der ikke findes to tilstande, der kan komme ud af trit med hinanden.
+  const thanks = document.getElementById("thanks");
+  const showThanks = () => {
+    if (!thanks || typeof thanks.showModal !== "function" || thanks.open) return;
+    thanks.showModal();
+  };
+  if (thanks) {
+    thanks.addEventListener("click", (event) => {
+      // Selve dialogen fylder hele skærmen; kortet indeni gør ikke.
+      if (event.target === thanks) thanks.close();
+    });
+    thanks.querySelector("[data-thanks-close]")
+      ?.addEventListener("click", () => thanks.close());
+  }
+
   const setupContactForm = (form, source) => {
     if (!form) return;
     // Tidspunktet formularen blev vist. En indsendelse under to sekunder
@@ -316,6 +334,7 @@
         feedback.hidden = false;
         feedback.textContent =
           "Tak — din besked er sendt. Markus vender tilbage, typisk samme dag.";
+        showThanks();
       } catch (error) {
         feedback.hidden = false;
         fallback(`Beskeden kunne ikke sendes (${error.message}). Prøv igen, eller skriv til `);
