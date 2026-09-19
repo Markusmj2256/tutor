@@ -1238,3 +1238,70 @@ h1 em, .section-title em {
 
 /* Lovpligtige virksomhedsoplysninger i footeren — dæmpet, men læsbar. */
 .footer-legal { color: #8d8474; font-size: 0.82rem; }
+
+/* ---------- Kampagne: gratis prøvehold i november ---------- */
+
+/* Kampagne-mærkatet skal skille sig ud fra det almindelige, dæmpede eyebrow. */
+.eyebrow-campaign {
+  color: var(--gold-2);
+  border-color: rgba(217, 145, 44, 0.55);
+  background: linear-gradient(150deg, #fdf4e3, rgba(255, 255, 255, 0.92) 70%);
+}
+
+/* De praktiske oplysninger. 320px som mindstebredde giver tre, to eller én
+   kolonne — aldrig fire. De seks punkter går op i alle tre, så der opstår
+   ingen tomme celler, hvor baggrundens skillelinje ville stå bar. */
+.campaign-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  margin: 48px 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--line);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.campaign-facts > div { padding: 24px 26px; background: var(--surface); }
+.campaign-facts dt {
+  margin-bottom: 8px;
+  font-size: 0.72rem; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold-2);
+}
+.campaign-facts dd {
+  margin: 0;
+  color: var(--heading);
+  font-size: 0.97rem; font-weight: 600; line-height: 1.5;
+}
+
+/* Samme gyldne kasse som .legal-callout, men med plads til en overskrift. */
+.campaign-note {
+  margin: 32px auto 0;
+  max-width: 78ch;
+  padding: 30px 32px;
+  border-radius: 18px;
+  background: linear-gradient(150deg, #fdf4e3, var(--surface) 65%);
+  border: 1px solid rgba(217, 145, 44, 0.35);
+}
+.campaign-note h3 { margin: 0 0 14px; font-size: 1.15rem; font-weight: 700; }
+.campaign-note p { margin: 0 0 14px; color: var(--muted); font-size: 0.97rem; line-height: 1.7; }
+.campaign-note p:last-child { margin-bottom: 0; }
+.campaign-note strong { color: var(--heading); }
+
+/* Besked i formularen, der kun vises når man søger det gratis hold. */
+.form-callout {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: linear-gradient(150deg, #fdf4e3, var(--surface) 70%);
+  border: 1px solid rgba(217, 145, 44, 0.35);
+  color: var(--muted);
+  font-size: 0.88rem; line-height: 1.6;
+}
+.form-callout strong { color: var(--heading); }
+
+/* De fem datoer skal kunne stå på én linje i kampagnekortet. */
+.course-dates { gap: 8px; }
+.course-dates .tag { padding: 5px 10px; letter-spacing: 0.04em; }

@@ -186,18 +186,52 @@
     const subjectSelect = groupForm.querySelector('[name="subject"]');
     const otherField = document.getElementById("other-subject-field");
     const otherInput = document.getElementById("other-subject");
-    if (subjectSelect && otherField && otherInput) {
-      const updateOtherSubject = () => {
-        const isOther = subjectSelect.value === "Andet fag";
-        otherField.hidden = !isOther;
-        otherInput.required = isOther;
-        otherInput.disabled = !isOther;
+    // Det gratis prøvehold i november har flere ansøgere end pladser. Derfor
+    // bliver kommentarfeltet til et motivationsfelt — og det bliver påkrævet.
+    const freeNote = document.getElementById("free-hold-note");
+    const messageField = document.getElementById("group-message");
+    const messageLabel = document.getElementById("group-message-label");
+    const MESSAGE_TEXT = {
+      normal: {
+        label: "Dage, behov eller andre ønsker (valgfrit)",
+        placeholder:
+          "Fx hvilke dage der passer, hvilke emner der driller, eller om du søger sammen med en ven",
+      },
+      free: {
+        label: "Din motivation — hvorfor vil du gerne med på holdet?",
+        placeholder:
+          "Fx hvad du gerne vil blive bedre til, hvad der driller i matematikken, og hvad eksamen betyder for dig",
+      },
+    };
+
+    if (subjectSelect) {
+      // Valgene genkendes på data-attributter frem for på deres tekst, så
+      // formuleringen i formularen kan ændres uden at logikken går i stykker.
+      const flag = (name) => subjectSelect.selectedOptions[0]?.dataset[name] === "1";
+
+      const updateSubjectFields = () => {
+        const isOther = flag("other");
+        if (otherField && otherInput) {
+          otherField.hidden = !isOther;
+          otherInput.required = isOther;
+          otherInput.disabled = !isOther;
+        }
+
+        const isFree = flag("free");
+        if (freeNote) freeNote.hidden = !isFree;
+        if (messageField && messageLabel) {
+          const text = isFree ? MESSAGE_TEXT.free : MESSAGE_TEXT.normal;
+          messageField.required = isFree;
+          messageField.placeholder = text.placeholder;
+          messageLabel.textContent = text.label;
+        }
       };
-      subjectSelect.addEventListener("change", updateOtherSubject);
+
+      subjectSelect.addEventListener("change", updateSubjectFields);
       groupForm.addEventListener("reset", () => {
-        requestAnimationFrame(updateOtherSubject);
+        requestAnimationFrame(updateSubjectFields);
       });
-      updateOtherSubject();
+      updateSubjectFields();
     }
   }
 
