@@ -2,7 +2,7 @@
 
 Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte & Lyngby.
 
-- Live: https://lokaltutor.pages.dev
+- Live: https://lokaltutor.dk
 - `index.html` — forside med undervisningsformer, priser, erfaring og kontakt
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
@@ -31,25 +31,21 @@ gren `main`, ingen byggekommando, output `/`). Nye commits publiceres automatisk
 
 | Adresse | Rolle |
 | --- | --- |
-| `lokaltutor.pages.dev` | Produktion. Canonical peger hertil. |
-| `markusmj2256.github.io/tutor` | Viderestiller til Cloudflare. |
-| `lokaltutor.dk` | Købt 19.09.2026, endnu ikke aktivt. |
+| `lokaltutor.dk` | Produktion og canonical-adresse. |
+| `www.lokaltutor.dk` | Samme Pages-projekt; canonical peger på domænet uden www. |
+| `lokaltutor.pages.dev` | Alternativ adresse med `X-Robots-Tag: noindex`. |
+| `markusmj2256.github.io/tutor` | Viderestiller til `lokaltutor.dk` med sti, query og fragment bevaret. |
 
-### lokaltutor.dk — resterende trin
+### Domæneopsætning
 
-Domænet er registreret hos DNS Platform ApS, men står som **Reserved** hos
-Punktum dk og har ingen DNS-delegering endnu.
+Domænet er registreret hos DNS Platform ApS. DNS hostes hos Cloudflare på
+Free-planen med `alberto.ns.cloudflare.com` og `angela.ns.cloudflare.com`.
+Begge domæner er tilføjet til Pages-projektet med proxied CNAME-poster til
+`lokaltutor.pages.dev`.
 
-1. Gennemfør ID- og datakontrol med MitID (frist 19.10.2026). Linket ligger i
-   Punktum dk's mail. Uden den bliver domænet suspenderet og slettet.
-2. Tilføj `lokaltutor.dk` som zone i Cloudflare, og skift navneservere hos
-   DNS Platform til dem Cloudflare oplyser. Et rod-domæne kan ikke pege på
-   Pages med en CNAME — det kræver, at zonen ligger hos Cloudflare.
-3. Pages-projektet → Custom domains → tilføj `lokaltutor.dk` og
-   `www.lokaltutor.dk`.
-4. Derefter: flyt canonical, og:url, sitemap og gh-pages-viderestillingen til
-   det nye domæne, og sæt `X-Robots-Tag: noindex` på `lokaltutor.pages.dev`
-   i `_headers`, så Google ikke indekserer to identiske sider.
+Punktum dk’s ID- og datakontrol er en separat registrantopgave. Den tidligere
+noterede frist er 19.10.2026; gennemførelsen er ikke verificeret i denne
+domæneflytning.
 
 Adgangslisten i edge-funktionen indeholder allerede `lokaltutor.dk` og
 `www.lokaltutor.dk`, så formularerne virker fra første opslag.
@@ -173,9 +169,8 @@ ville kilden forsvinde før henvendelsen.
 Databehandleraftaler skal accepteres hos Supabase, Resend og Cloudflare. De er
 nævnt som databehandlere i politikken, men aftalerne er ikke indgået endnu.
 
-Når `lokaltutor.dk` går i luften: giv `lokaltutor.pages.dev` `X-Robots-Tag:
-noindex` i `_headers`, ellers indekserer Google to identiske sider. Gør det
-ikke før — så afindekseres hele siden.
+`_headers` udelukker kun `lokaltutor.pages.dev` fra indeksering. Det primære
+domæne kan fortsat indekseres; admin-siden er fortsat udelukket på alle værter.
 
 ## Lokal forhåndsvisning
 

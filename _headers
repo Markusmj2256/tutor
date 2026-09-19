@@ -23,3 +23,7 @@
 /admin.html
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
+
+# Kun Cloudflares alternative adresse skal udelukkes fra søgeresultater.
+https://lokaltutor.pages.dev/*
+  X-Robots-Tag: noindex
