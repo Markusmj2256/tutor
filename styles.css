@@ -1305,3 +1305,68 @@ h1 em, .section-title em {
 /* De fem datoer skal kunne stå på én linje i kampagnekortet. */
 .course-dates { gap: 8px; }
 .course-dates .tag { padding: 5px 10px; letter-spacing: 0.04em; }
+
+/* ---------- Kampagnebånd på forsiden ---------- */
+.campaign-band {
+  padding: clamp(44px, 6vw, 68px) clamp(16px, 4vw, 40px);
+  background: linear-gradient(150deg, #fdf4e3, var(--bg) 72%);
+  border-top: 1px solid rgba(217, 145, 44, 0.3);
+  border-bottom: 1px solid rgba(217, 145, 44, 0.3);
+}
+.campaign-band-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: clamp(28px, 5vw, 56px);
+  align-items: center;
+}
+.campaign-band h2 {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.campaign-band h2 em {
+  font-style: italic;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.campaign-band p { margin: 0 0 26px; max-width: 58ch; color: var(--muted); }
+
+/* Datoerne som en lille kalenderrække. */
+.campaign-band-dates {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: flex-end;
+  margin: 0; padding: 0; list-style: none;
+}
+/* 5 × 66px + 4 × 8px = 362px — holder alle fem datoer på én linje i den
+   smalle højrekolonne. De brydes stadig frit på mobil. */
+.campaign-band-dates li {
+  display: grid; place-items: center;
+  width: 66px; padding: 14px 0;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid rgba(217, 145, 44, 0.35);
+  box-shadow: var(--shadow-sm);
+}
+.campaign-band-dates strong {
+  font-family: var(--font-display);
+  font-size: 1.85rem; line-height: 1;
+  color: var(--gold-2);
+}
+.campaign-band-dates span {
+  margin-top: 5px;
+  font-size: 0.68rem; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .campaign-band-inner { grid-template-columns: 1fr; }
+  .campaign-band-dates { justify-content: flex-start; }
+}
