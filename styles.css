@@ -1235,3 +1235,6 @@ h1 em, .section-title em {
 
 /* Diskret link til politikken under formularerne. */
 .form-note .privacy-link { white-space: nowrap; }
+
+/* Lovpligtige virksomhedsoplysninger i footeren — dæmpet, men læsbar. */
+.footer-legal { color: #8d8474; font-size: 0.82rem; }

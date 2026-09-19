@@ -33,6 +33,26 @@ gren `main`, ingen byggekommando, output `/`). Nye commits publiceres automatisk
 | --- | --- |
 | `lokaltutor.pages.dev` | Produktion. Canonical peger hertil. |
 | `markusmj2256.github.io/tutor` | Viderestiller til Cloudflare. |
+| `lokaltutor.dk` | Købt 19.09.2026, endnu ikke aktivt. |
+
+### lokaltutor.dk — resterende trin
+
+Domænet er registreret hos DNS Platform ApS, men står som **Reserved** hos
+Punktum dk og har ingen DNS-delegering endnu.
+
+1. Gennemfør ID- og datakontrol med MitID (frist 19.10.2026). Linket ligger i
+   Punktum dk's mail. Uden den bliver domænet suspenderet og slettet.
+2. Tilføj `lokaltutor.dk` som zone i Cloudflare, og skift navneservere hos
+   DNS Platform til dem Cloudflare oplyser. Et rod-domæne kan ikke pege på
+   Pages med en CNAME — det kræver, at zonen ligger hos Cloudflare.
+3. Pages-projektet → Custom domains → tilføj `lokaltutor.dk` og
+   `www.lokaltutor.dk`.
+4. Derefter: flyt canonical, og:url, sitemap og gh-pages-viderestillingen til
+   det nye domæne, og sæt `X-Robots-Tag: noindex` på `lokaltutor.pages.dev`
+   i `_headers`, så Google ikke indekserer to identiske sider.
+
+Adgangslisten i edge-funktionen indeholder allerede `lokaltutor.dk` og
+`www.lokaltutor.dk`, så formularerne virker fra første opslag.
 
 Cloudflares gratisplan tillader udtrykkeligt kommerciel brug, i modsætning til
 Vercels Hobby-plan. Vercel-projektet er sat på pause og bruges ikke længere;
@@ -108,6 +128,15 @@ Fem flyer-varianter har hver sit permanente kampagne-ID og korte QR-link fra
 Flyerbesøg og nye henvendelser kobles i Supabase. Admin viser besøg, kontakt-rate
 og tilmeldingsrate med periodevalg, filtre og CSV. Tilmeldinger følger manuelt
 statusfeltet på henvendelserne. Se [flyervejledningen](docs/flyer-tracking.md).
+
+## Virksomhedsoplysninger
+
+Lokaltutor, personligt ejet mindre virksomhed, CVR-nr. 46785290.
+Navn og CVR står i footeren på alle sider og i privatlivspolitikken.
+
+E-handelsloven kræver desuden en geografisk adresse. Den er bevidst ikke
+tilføjet endnu, da den registrerede adresse er en privatadresse — det er
+ejerens beslutning, om den skal offentliggøres.
 
 ## Persondata og GDPR
 
