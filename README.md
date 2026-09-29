@@ -110,6 +110,20 @@ Adgangen styres af row level security, ikke af klientkoden: en konto får kun
 adgang, hvis dens mailadresse står i tabellen `admin_emails`. Anon-nøglen i
 `admin.js` er offentlig og giver i sig selv ingen adgang til data.
 
+Der findes kun én konto, og der kan ikke oprettes flere:
+
+- Nye tilmeldinger er slået fra i Supabase (Authentication → Sign In /
+  Providers → *Allow new users to sign up*). API'et svarer `signup_disabled`.
+- Admin-siden har ingen opret-knap.
+- `admin_emails` kan kun ændres af databasen selv; `anon` og `authenticated`
+  har ingen rettigheder til tabellen (migration `laas_admin_listen`).
+
+Bemærk at spærringen gælder hele Supabase-projektet, som også rummer
+`life_dashboard`-tabellerne.
+
+Supabase' Site URL er `https://lokaltutor.dk`, og `https://lokaltutor.dk/admin`
+er tilladt som redirect, så mails fra Supabase Auth lander på domænet.
+
 Siden kan filtrere på formular og status, søge i alle felter, sætte status
 (ny, kontaktet, tilmeldt, lukket), gemme egne noter og hente en CSV til Excel.
 Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.

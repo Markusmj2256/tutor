@@ -125,32 +125,6 @@ $("resend-button").addEventListener("click", async () => {
   showError(loginError, `Ny bekræftelsesmail sendt til ${email}. Klik linket i den, og log så ind her.`, "ok");
 });
 
-// Første gang skal kontoen oprettes. Det er ufarligt at lade knappen stå:
-// en konto giver i sig selv ingen adgang — mailen skal stå i admin_emails,
-// og row level security afviser alle andre.
-$("signup-button").addEventListener("click", async () => {
-  loginError.hidden = true;
-  const data = new FormData(loginForm);
-  const email = String(data.get("email") || "").trim();
-  const password = String(data.get("password") || "");
-
-  if (!email || password.length < 8) {
-    showError(loginError, "Udfyld mail og en adgangskode på mindst 8 tegn.");
-    return;
-  }
-
-  const { data: result, error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    showError(loginError, `Kunne ikke oprette adgang: ${error.message}`);
-    return;
-  }
-  if (result.session) {
-    await start();
-    return;
-  }
-  showError(loginError, "Kontoen er oprettet. Bekræft den via mailen, og log så ind.", "ok");
-});
-
 $("logout").addEventListener("click", async () => {
   await supabase.auth.signOut();
   leads = [];
