@@ -13,6 +13,17 @@ const SUPABASE_URL = "https://kslmcjkyhxdevdfyzzrb.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzbG1jamt5aHhkZXZkZnl6enJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0Mzc4NDIsImV4cCI6MjEwMTAxMzg0Mn0.lP-uPzYevRcKCos3wOQVB56XjrDgWrHqXJtSt1x-300";
 
+// Linket i "Glemt adgangskode?"-mailen lander her med type=recovery i
+// adressens #-del. supabase-js læser og fjerner den, når klienten starter,
+// så vi noterer den først. Et udløbet link lander med en fejlbeskrivelse.
+const linkParams = new URLSearchParams(location.hash.slice(1));
+let pendingRecovery = linkParams.get("type") === "recovery";
+let linkError = linkParams.get("error_description");
+
+// Nulstillingslinks sender altid tilbage til produktionsadressen, som står på
+// Supabase' liste over tilladte adresser.
+const ADMIN_URL = "https://lokaltutor.dk/admin";
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const $ = (id) => document.getElementById(id);
@@ -24,6 +35,10 @@ const app = $("app");
 const appError = $("app-error");
 const list = $("list");
 const empty = $("empty");
+const passwordScreen = $("password-screen");
+const passwordForm = $("password-form");
+const passwordError = $("password-error");
+const passwordButton = $("password-button");
 
 const SOURCE_LABEL = { hold: "Hold", ene: "1:1", forside: "Forside" };
 const STATUS_LABEL = {
@@ -125,6 +140,129 @@ $("resend-button").addEventListener("click", async () => {
   showError(loginError, `Ny bekræftelsesmail sendt til ${email}. Klik linket i den, og log så ind her.`, "ok");
 });
 
+/* ---------- Glemt og skift adgangskode ---------- */
+
+$("forgot-button").addEventListener("click", async () => {
+  const email = String(new FormData(loginForm).get("email") || "").trim();
+  if (!email) {
+    showError(loginError, "Skriv din mailadresse ovenfor, og tryk så \"Glemt adgangskode?\" igen.");
+    return;
+  }
+  const button = $("forgot-button");
+  button.disabled = true;
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: ADMIN_URL });
+  button.disabled = false;
+  if (error) {
+    showError(
+      loginError,
+      /rate limit/i.test(error.message)
+        ? "Der er sendt for mange mails på kort tid. Vent en times tid, og prøv igen."
+        : `Kunne ikke sende mailen: ${error.message}`,
+    );
+    return;
+  }
+  // Supabase svarer ens, uanset om adressen findes — det gør vi også.
+  showError(
+    loginError,
+    `Hvis ${email} har adgang, er der sendt et link til at vælge en ny adgangskode. Linket virker i en time.`,
+    "ok",
+  );
+});
+
+// recovery: kommet via nulstillingslinket, så der er intet nuværende kodeord
+// at spørge om. Ellers er man logget ind og skal bekræfte det nuværende først.
+let passwordRecovery = false;
+function showPasswordScreen(email, { recovery }) {
+  passwordRecovery = recovery;
+  passwordForm.reset();
+  passwordError.hidden = true;
+  $("password-username").value = email ?? "";
+  const current = passwordForm.elements.current;
+  $("current-password-field").hidden = recovery;
+  current.required = !recovery;
+  current.disabled = recovery;
+  $("password-cancel-wrap").hidden = recovery;
+  loginScreen.hidden = true;
+  app.hidden = true;
+  passwordScreen.hidden = false;
+  (recovery ? passwordForm.elements.password : current).focus();
+}
+
+// Samme skærm, hvis supabase-js melder nulstillingen på sin egen måde.
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event !== "PASSWORD_RECOVERY") return;
+  pendingRecovery = false;
+  if (passwordRecovery && !passwordScreen.hidden) return;
+  showPasswordScreen(session?.user.email, { recovery: true });
+});
+
+const PASSWORD_ERRORS = {
+  same_password: "Den nye adgangskode er den samme som den gamle. Vælg en anden.",
+  weak_password: "Adgangskoden er for svag. Vælg en længere.",
+  reauthentication_needed: "Supabase kræver et frisk login. Log ud og ind igen, og prøv så igen.",
+};
+
+passwordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  passwordError.hidden = true;
+  const data = new FormData(passwordForm);
+  const password = String(data.get("password") || "");
+  if (password.length < 8) {
+    showError(passwordError, "Adgangskoden skal være mindst 8 tegn.");
+    return;
+  }
+  if (password !== String(data.get("confirm") || "")) {
+    showError(passwordError, "De to nye adgangskoder er ikke ens.");
+    return;
+  }
+
+  passwordButton.disabled = true;
+  passwordButton.textContent = "Gemmer…";
+  const done = () => {
+    passwordButton.disabled = false;
+    passwordButton.textContent = "Gem adgangskode";
+  };
+
+  if (!passwordRecovery) {
+    // En åben session alene må ikke kunne skifte kodeordet.
+    const { error } = await supabase.auth.signInWithPassword({
+      email: $("password-username").value,
+      password: String(data.get("current") || ""),
+    });
+    if (error) {
+      done();
+      showError(passwordError, "Den nuværende adgangskode er forkert.");
+      return;
+    }
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    done();
+    showError(passwordError, PASSWORD_ERRORS[error.code] ?? `Kunne ikke gemme: ${error.message}`);
+    return;
+  }
+
+  // Alle andre sessioner — andre browsere og logins med det gamle kodeord —
+  // bliver ugyldige. Denne her fortsætter.
+  await supabase.auth.signOut({ scope: "others" });
+  done();
+  passwordRecovery = false;
+  passwordScreen.hidden = true;
+  await start();
+  showError(appError, "Adgangskoden er skiftet. Alle andre steder er logget ud.", "ok");
+});
+
+$("change-password").addEventListener("click", async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  showPasswordScreen(session?.user.email, { recovery: false });
+});
+
+$("password-cancel").addEventListener("click", () => {
+  passwordScreen.hidden = true;
+  app.hidden = false;
+});
+
 $("logout").addEventListener("click", async () => {
   await supabase.auth.signOut();
   leads = [];
@@ -142,6 +280,17 @@ async function start() {
   if (!session) {
     app.hidden = true;
     loginScreen.hidden = false;
+    if (linkError) {
+      linkError = null;
+      history.replaceState(null, "", location.pathname + location.search);
+      showError(loginError, "Linket er udløbet eller allerede brugt. Tryk \"Glemt adgangskode?\" for at få et nyt.");
+    }
+    return;
+  }
+
+  if (pendingRecovery) {
+    pendingRecovery = false;
+    showPasswordScreen(session.user.email, { recovery: true });
     return;
   }
 
@@ -158,6 +307,8 @@ async function start() {
     return;
   }
 
+  // Er adgangskodeskærmen kommet frem imens, bliver den stående.
+  if (!passwordScreen.hidden) return;
   loginScreen.hidden = true;
   app.hidden = false;
   $("who").textContent = session.user.email ?? "";

@@ -124,6 +124,16 @@ Bemærk at spærringen gælder hele Supabase-projektet, som også rummer
 Supabase' Site URL er `https://lokaltutor.dk`, og `https://lokaltutor.dk/admin`
 er tilladt som redirect, så mails fra Supabase Auth lander på domænet.
 
+### Adgangskode
+
+- **Glemt adgangskode?** på login-skærmen sender et link til mailen. Linket
+  lander på `/admin`, som viser en skærm til at vælge ny adgangskode.
+- **Skift adgangskode** i toppen, når man er logget ind. Kræver den nuværende
+  adgangskode, så en åben session alene ikke kan skifte den.
+
+I begge tilfælde logges alle andre sessioner ud (`signOut({ scope: "others" })`),
+så det gamle kodeord og gamle logins holder op med at virke med det samme.
+
 Siden kan filtrere på formular og status, søge i alle felter, sætte status
 (ny, kontaktet, tilmeldt, lukket), gemme egne noter og hente en CSV til Excel.
 Indsendt indhold vises altid med `textContent`, aldrig `innerHTML`.

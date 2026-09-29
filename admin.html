@@ -241,6 +241,34 @@
         <input type="password" name="password" autocomplete="current-password" required>
       </label>
       <button class="button button-primary full" type="submit" id="login-button">Log ind</button>
+      <p class="sub" style="margin:18px 0 0; text-align:center">
+        <button class="button-link" type="button" id="forgot-button">Glemt adgangskode?</button>
+      </p>
+    </form>
+  </div>
+
+  <!-- ===== Ny adgangskode — efter nulstillingslink eller fra "Skift adgangskode" ===== -->
+  <div class="login-screen" id="password-screen" hidden>
+    <form class="login-card" id="password-form">
+      <div class="brand-mark" aria-hidden="true">MJ</div>
+      <h1>Vælg ny adgangskode</h1>
+      <p class="sub">Når du gemmer, logges alle andre steder ud, og den gamle adgangskode holder op med at virke.</p>
+      <p class="notice notice-error" id="password-error" hidden></p>
+      <!-- Fortæller password-managere, hvilken konto kodeordet hører til. -->
+      <input type="email" id="password-username" autocomplete="username" hidden>
+      <label class="field" id="current-password-field">Nuværende adgangskode
+        <input type="password" name="current" autocomplete="current-password">
+      </label>
+      <label class="field">Ny adgangskode
+        <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <label class="field">Gentag den nye adgangskode
+        <input type="password" name="confirm" autocomplete="new-password" minlength="8" required>
+      </label>
+      <button class="button button-primary full" type="submit" id="password-button">Gem adgangskode</button>
+      <p class="sub" style="margin:18px 0 0; text-align:center" id="password-cancel-wrap">
+        <button class="button-link" type="button" id="password-cancel">Annullér</button>
+      </p>
     </form>
   </div>
 
@@ -252,6 +280,7 @@
         <span class="who" id="who"></span>
         <button class="button button-ghost button-small" id="refresh">Opdatér</button>
         <button class="button button-ghost button-small" id="export">Hent CSV</button>
+        <button class="button button-ghost button-small" id="change-password">Skift adgangskode</button>
         <button class="button button-ghost button-small" id="logout">Log ud</button>
       </div>
     </header>
