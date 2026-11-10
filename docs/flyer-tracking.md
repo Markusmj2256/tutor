@@ -84,8 +84,7 @@ ikke en del af denne ændring. Den bør også beskrive flyer-attribution.
 ## Test og udgivelse
 
 `?tracking_test=1` (sammen med flyer-parameteren) og localhost registreres som tests
-og udelades af resultaterne. Admins testlinks sætter flaget automatisk. Disse links
-skal ikke trykkes. Et testflag slår **ikke** afsendelse af kontaktmail fra: brug
+og udelades af resultaterne. Den slags links skal ikke trykkes. Et testflag slår **ikke** afsendelse af kontaktmail fra: brug
 testværktøjets mock, ikke rigtige kontaktindsendelser, til QA uden mails.
 
 - `node --test tests/*.test.cjs`: klientforløb og Edge Function med mock-database/mail.

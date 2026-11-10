@@ -565,16 +565,6 @@ async function loadFlyers() {
     const tr = el("tr");
     const name = el("td");
     name.append(el("div", "flyer-name", row.name));
-    const link = el("a", null, "Åbn testlink ↗");
-    // Bygges mod den side admin-siden selv kører på, så testlinket følger
-    // med ved et hostingskifte og virker automatisk på lokaltutor.dk.
-    const url = new URL(row.landing_path, location.origin);
-    url.searchParams.set("flyer", row.flyer_id);
-    url.searchParams.set("tracking_test", "1");
-    link.href = url.href;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    name.append(link);
     tr.append(name, ...[row.visits, row.new_leads, percent(row.contact_rate), row.enrolled_leads, percent(row.enrollment_rate)].map((v) => el("td", null, String(v))));
     return tr;
   }));
@@ -586,7 +576,7 @@ async function loadFlyers() {
   filter.value = selected;
   $("flyer-message").textContent = flyerRows.some((r) => Number(r.visits) > 0)
     ? "Sammenlign raterne sammen med antal besøg. Et lille antal besøg kan give store udsving."
-    : "Ingen registrerede flyerbesøg i perioden endnu. Testlinks nedenfor tæller ikke med.";
+    : "Ingen registrerede flyerbesøg i perioden endnu.";
   $("flyer-export").disabled = false;
 }
 $("flyer-period").addEventListener("change", loadFlyers);
