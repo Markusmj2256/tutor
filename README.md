@@ -7,6 +7,9 @@ Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte
 - `holdundervisning.html` — Matematik A/B på hold med 4–5 elever og interessetilmelding
 - `eneundervisning.html` — personlig undervisning, erfaring, anmeldelser og timepakker
 - `admin.html` / `admin.js` — intern side med indkomne henvendelser
+- `forloeb.html` / `forloeb.js` — kundeside: forældre logger ind med et link på mail og følger barnets forløb
+- `forloeb-admin.html` / `forloeb-admin.js` — backend til forløb: timer, forældreadgang og rapporter (samme login som admin)
+- `forloeb-common.js` / `forloeb.css` — fælles kode og design for de to
 - `privatliv.html` — privatlivspolitik
 - `flyer-tracking.js` — flyerbesøg og attribution på tværs af sider
 - `supabase/` — versionsstyret kontaktfunktion, flyermigration og databasetest
@@ -23,6 +26,22 @@ Statisk HTML, CSS og JavaScript uden byggetrin. Samme varme, lyse design på all
 Fraunces til overskrifter, Manrope til brødtekst, gyldne knapper, afrundede kort og egne
 undervisningsfotos i responsive WebP/JPG-versioner. Navigation, mobilmenu,
 scrollanimationer og formularer deler styling og JavaScript.
+
+## Kundesiden
+
+Forældre har ingen adgangskode. På `/forloeb` skriver de deres mail, og
+edge-funktionen `forloeb-login` sender et engangslink via Resend fra
+`login@lokaltutor.dk`. Funktionen svarer ens, uanset om mailen findes, og
+sender kun til adresser, der står i `forloeb_parents`. Linket byttes først til
+en session, når forælderen trykker "Åbn forløbet", så mailprogrammers
+linkscannere ikke bruger det op.
+
+Adgangen ligger i databasen (`supabase/migrations/20261112090000_kundeforloeb.sql`):
+admin må alt, en forælder må læse de forløb, deres bekræftede mail står på, og
+anon må intet. Det forudsætter, at "Confirm email" er slået til i Supabase Auth.
+
+Ejeren opretter forløb og skriver rapporter på `/forloeb-admin`, som bruger
+samme login som `/admin`. "Se siden som forælder" åbner `/forloeb?vis=<id>`.
 
 ## Hosting
 

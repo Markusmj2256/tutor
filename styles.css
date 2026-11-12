@@ -134,6 +134,9 @@ h1, h2, h3 { color: var(--heading); }
 .site-nav a[aria-current="page"]::after { transform: scaleX(1); }
 
 .header-actions { display: flex; align-items: center; gap: 12px; }
+/* Login til kundesiden: knap i sidehovedet på brede skærme, og et punkt i
+   menuen, når knapperne er skjult bag menuikonet. */
+.site-nav .nav-login { display: none; }
 
 .nav-toggle {
   display: none;
@@ -1108,6 +1111,11 @@ h1 em, .section-title em {
   .site-nav a::after { display: none; }
   .nav-toggle { display: flex; }
   .header-actions .button { display: none; }
+  .site-nav .nav-login {
+    display: block; margin-top: 6px; padding-top: 16px;
+    border-top: 1px solid var(--line); border-radius: 0 0 10px 10px;
+    color: var(--gold-2);
+  }
 }
 
 @media (max-width: 820px) {

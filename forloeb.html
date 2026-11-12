@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jeres forløb — Lokaltutor</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#fbfaf7">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/fonts.css">
+  <link rel="stylesheet" href="forloeb.css?v=1">
+</head>
+<body>
+  <div class="preview-banner" id="preview-banner" hidden></div>
+
+  <div class="loading" id="loading">Henter…</div>
+
+  <!-- ===== Login ===== -->
+  <main class="login-screen" id="login-screen" hidden>
+    <div class="card login-card">
+      <span class="brand-mark" aria-hidden="true">MJ</span>
+
+      <!-- Trin 1: bed om et link -->
+      <div id="login-step">
+        <h1>Følg jeres forløb</h1>
+        <p class="muted">Skriv den mail, du har givet Markus. Så sender vi et link, der logger dig ind. Der er ingen adgangskode at huske.</p>
+        <p class="notice notice-warn" id="login-error" hidden></p>
+        <form id="login-form" novalidate>
+          <label class="field">E-mail
+            <input type="email" id="login-email" name="email" autocomplete="email" placeholder="navn@eksempel.dk" required>
+          </label>
+          <button class="button button-primary full" type="submit" id="login-button">Send mig et login-link</button>
+        </form>
+      </div>
+
+      <!-- Trin 2: mailen er sendt -->
+      <div id="sent-step" hidden>
+        <h1>Tjek din mail</h1>
+        <p class="muted" id="sent-text"></p>
+        <p class="small muted" style="margin-top:14px">Kommer den ikke inden for et par minutter, så kig i spam, eller skriv til Markus på <a href="tel:+4524259986">24 25 99 86</a>.</p>
+        <p style="margin-top:14px"><button class="button-link" id="back-to-login" type="button">Brug en anden mail</button></p>
+      </div>
+
+      <!-- Trin 3: kommet fra linket i mailen -->
+      <div id="open-step" hidden>
+        <h1>Velkommen</h1>
+        <p class="muted">Tryk på knappen for at åbne forløbet. Du forbliver logget ind på denne enhed.</p>
+        <p class="notice notice-warn" id="open-error" hidden></p>
+        <p style="margin-top:22px"><button class="button button-primary full" type="button" id="open-button">Åbn forløbet</button></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Forløbet ===== -->
+  <div id="app" hidden>
+    <div class="wrap">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Markus Johnsen — forside">
+          <span class="brand-mark">MJ</span>
+          <span class="brand-text"><strong>Markus Johnsen</strong><small>Matematik &amp; naturfag</small></span>
+        </a>
+        <div class="topbar-actions">
+          <span id="who"></span>
+          <button class="button button-ghost button-small" id="logout" type="button">Log ud</button>
+        </div>
+      </header>
+
+      <section class="hello">
+        <p class="kicker" id="hello-kicker"></p>
+        <h1 id="hello-title"></h1>
+        <p class="muted" id="hello-text"></p>
+        <div class="tabs" id="children" hidden></div>
+      </section>
+
+      <section class="summary" id="summary" aria-label="Overblik"></section>
+
+      <section class="road-section" aria-labelledby="road-title">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Forløbet</p>
+            <h2 id="road-title">Vejen indtil nu</h2>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="l-done"></i>Afholdt</span>
+            <span><i class="l-next"></i>Næste gang</span>
+            <span><i class="l-future"></i>Timer I har til gode</span>
+          </div>
+        </div>
+        <div class="card road-card">
+          <div class="road-scroll" id="road-scroll" tabindex="0" role="region" aria-label="Forløbsvejen. Rul til siden for at se det hele."></div>
+          <p class="road-hint">Tryk på et punkt for at læse, hvad vi lavede den gang. Rul til siden for at se hele vejen.</p>
+        </div>
+        <article class="card report" id="report" aria-live="polite"></article>
+      </section>
+
+      <section class="all-reports" aria-labelledby="all-title">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Arkiv</p>
+            <h2 id="all-title">Alle rapporter</h2>
+          </div>
+        </div>
+        <div class="report-list" id="report-list"></div>
+      </section>
+
+      <footer class="foot">
+        <span>Spørgsmål til forløbet? Ring eller skriv til Markus på <a href="tel:+4524259986">24 25 99 86</a>.</span>
+        <span>Kun I og Markus kan se denne side. <a href="privatliv.html">Privatlivspolitik</a></span>
+      </footer>
+    </div>
+  </div>
+
+  <noscript><p style="padding:24px">Siden kræver JavaScript for at vise forløbet.</p></noscript>
+  <script type="module" src="forloeb.js?v=1"></script>
+</body>
+</html>

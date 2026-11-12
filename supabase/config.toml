@@ -1,3 +1,7 @@
 [functions.contact]
 verify_jwt = true
 entrypoint = "./functions/contact/index.ts"
+
+[functions.forloeb-login]
+verify_jwt = true
+entrypoint = "./functions/forloeb-login/index.ts"

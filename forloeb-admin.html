@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forløb — Lokaltutor</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/fonts.css">
+  <link rel="stylesheet" href="forloeb.css?v=1">
+</head>
+<body>
+  <div class="loading" id="loading">Henter…</div>
+
+  <!-- Vises, hvis man ikke er logget ind som admin. Selve loginnet ligger på /admin. -->
+  <main class="login-screen" id="gate" hidden>
+    <div class="card login-card">
+      <span class="brand-mark" aria-hidden="true">MJ</span>
+      <h1>Forløb</h1>
+      <p class="muted" id="gate-text">Log ind som admin for at se og redigere forløbene.</p>
+      <p style="margin-top:22px"><a class="button button-primary full" href="admin.html">Gå til login</a></p>
+    </div>
+  </main>
+
+  <div class="wrap" id="app" hidden>
+    <header class="topbar">
+      <a class="brand" href="forloeb-admin.html">
+        <span class="brand-mark" aria-hidden="true">MJ</span>
+        <span class="brand-text"><strong>Forløb</strong><small id="who"></small></span>
+      </a>
+      <div class="topbar-actions">
+        <a class="button button-ghost button-small" href="admin.html">Henvendelser</a>
+        <button class="button button-primary button-small" id="new-customer" type="button">+ Ny kunde</button>
+      </div>
+    </header>
+
+    <p class="notice notice-warn" id="app-error" hidden></p>
+    <section class="admin-stats" id="stats" aria-label="Nøgletal"></section>
+
+    <div class="admin-layout">
+      <nav class="cust-list" id="cust-list" aria-label="Kunder"></nav>
+      <main class="detail" id="detail"></main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="forloeb-admin.js?v=1"></script>
+</body>
+</html>
