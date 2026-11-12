@@ -50,12 +50,13 @@
         <h1 class="section-title">Sådan behandler jeg <em>dine oplysninger</em></h1>
 
         <p class="legal-lead">
-          Kort fortalt: Jeg gemmer kun det, du selv skriver i kontaktformularen, og bruger det
-          udelukkende til at svare dig. Der er ingen cookies, ingen annoncer, ingen sporing på
-          tværs af hjemmesider, og oplysningerne bliver slettet automatisk efter en fast frist.
+          Kort fortalt: Jeg gemmer det, du selv skriver i kontaktformularen, og bruger det
+          udelukkende til at svare dig. Er I kunder, gemmer jeg også forløbet, så I kan følge
+          det på kundesiden. Der er ingen cookies, ingen annoncer og ingen sporing på tværs af
+          hjemmesider, og henvendelser bliver slettet automatisk efter en fast frist.
         </p>
 
-        <p class="legal-updated">Senest opdateret 19. september 2026</p>
+        <p class="legal-updated">Senest opdateret 12. november 2026</p>
 
         <h2>Hvem er ansvarlig</h2>
         <p>
@@ -102,13 +103,45 @@
           hvor det giver mening at dele dem ud.
         </p>
 
+        <h3>Når I er kunder og bruger kundesiden</h3>
+        <p>
+          På <a href="forloeb.html">kundesiden</a> kan forældre følge deres barns forløb. For at
+          den kan virke, gemmer jeg:
+        </p>
+        <ul>
+          <li>Elevens navn, klassetrin, fag og målet for forløbet</li>
+          <li>Hvor mange timer I har købt, og hvornår</li>
+          <li>
+            En kort rapport for hver undervisningsgang: dato, varighed, emne, hvad vi arbejdede
+            med, hvad der gik godt, hvad der skal ske til næste gang, og min vurdering af
+            forståelsen på en skala fra 1 til 5
+          </li>
+          <li>Tidspunktet for næste aftalte gang</li>
+          <li>Navn og mailadresse på de forældre, der har adgang, og hvornår de sidst har været inde</li>
+        </ul>
+        <p>
+          Der er ingen adgangskode. Du logger ind med et link, som sendes til din mail. Når du
+          er logget ind, gemmer din browser en loginnøgle, så du ikke skal bede om et nyt link
+          hver gang. Den bruges kun til login og forsvinder, når du trykker "Log ud".
+        </p>
+        <p>
+          Når nogen beder om et login-link, gemmes en krypteret udgave af IP-adressen og af
+          mailadressen i en kort periode. Det bruges alene til at begrænse, hvor mange links
+          der kan sendes.
+        </p>
+        <p>
+          Kundesiden henter et stykke programkode fra jsDelivr, som er et offentligt bibliotek
+          for webkode. jsDelivr kan dermed se din IP-adresse, når du åbner kundesiden, men får
+          ingen oplysninger om forløbet.
+        </p>
+
         <h3>Hvad jeg ikke gør</h3>
         <ul>
           <li>Der er ingen cookies på siden — derfor er der heller ikke noget cookiebanner.</li>
           <li>Der er ingen Google Analytics eller lignende besøgsstatistik.</li>
           <li>Der er ingen annoncer og ingen deling med annoncenetværk.</li>
           <li>Jeg sælger eller videregiver aldrig dine oplysninger.</li>
-          <li>Skrifttyper og billeder hentes fra mit eget domæne, så ingen tredjepart ser dit besøg.</li>
+          <li>Skrifttyper og billeder hentes fra mit eget domæne, så ingen tredjepart ser dit besøg på de offentlige sider.</li>
         </ul>
 
         <h2>Hvorfor jeg må gemme det</h2>
@@ -122,6 +155,21 @@
                 <td>Det du skriver i formularen</td>
                 <td>At svare dig og aftale et eventuelt undervisningsforløb</td>
                 <td>Databeskyttelsesforordningen artikel 6, stk. 1, litra b — skridt på din egen anmodning forud for en aftale</td>
+              </tr>
+              <tr>
+                <td>Forløb, timer og rapporter på kundesiden</td>
+                <td>At levere undervisningen og holde jer orienteret om den</td>
+                <td>Artikel 6, stk. 1, litra b — opfyldelse af vores aftale om undervisning</td>
+              </tr>
+              <tr>
+                <td>Forældres navn og mailadresse</td>
+                <td>At give jer, og kun jer, adgang til forløbet</td>
+                <td>Artikel 6, stk. 1, litra b — opfyldelse af vores aftale om undervisning</td>
+              </tr>
+              <tr>
+                <td>Krypteret IP- og mailadresse ved login</td>
+                <td>At forhindre misbrug af login-links</td>
+                <td>Artikel 6, stk. 1, litra f — min legitime interesse i, at uvedkommende ikke kan genere jer med mails</td>
               </tr>
               <tr>
                 <td>Krypteret IP-adresse</td>
@@ -144,6 +192,12 @@
           fulde navn, fødselsdato eller andre følsomme detaljer for at få et svar — klassetrin
           og fag er rigeligt til, at vi kan tage en snak.
         </p>
+        <p>
+          Rapporterne på kundesiden handler om elevens faglige arbejde: hvad vi har lavet, og
+          hvad næste skridt er. Jeg skriver ikke om helbred, diagnoser eller private forhold.
+          Det er forældrene, der får adgang. Skal eleven selv kunne logge ind, sker det kun
+          efter aftale med jer.
+        </p>
 
         <h2>Hvem ellers behandler oplysningerne</h2>
         <p>
@@ -156,8 +210,9 @@
               <tr><th>Leverandør</th><th>Rolle</th><th>Hvor</th></tr>
             </thead>
             <tbody>
-              <tr><td>Supabase</td><td>Database og serverfunktioner — her ligger henvendelserne</td><td>London, Storbritannien</td></tr>
-              <tr><td>Resend</td><td>Sender mig en besked om, at du har skrevet</td><td>USA</td></tr>
+              <tr><td>Supabase</td><td>Database, login og serverfunktioner — her ligger henvendelserne og forløbene</td><td>London, Storbritannien</td></tr>
+              <tr><td>Resend</td><td>Sender mig en besked om, at du har skrevet, og sender login-links til forældre</td><td>USA</td></tr>
+              <tr><td>jsDelivr</td><td>Leverer et stykke programkode til kundesiden og admin-siden. Ser kun IP-adressen</td><td>Globalt netværk</td></tr>
               <tr><td>Cloudflare</td><td>Hosting af selve hjemmesiden</td><td>Globalt netværk, leveret fra nærmeste server i EU</td></tr>
             </tbody>
           </table>
@@ -171,6 +226,11 @@
           Ud over mig selv har ingen adgang til henvendelserne. De ligger bag login, og
           databasen afviser enhver anden konto.
         </p>
+        <p>
+          Et forløb kan kun læses af mig og af de forældre, jeg har givet adgang til netop det
+          forløb. Forældre kan læse, men ikke ændre noget, og de kan ikke se andre familiers
+          forløb.
+        </p>
 
         <h2>Hvor længe jeg gemmer det</h2>
         <p>Sletningen sker automatisk hver nat — det er ikke noget, jeg skal huske:</p>
@@ -183,9 +243,15 @@
               <tr><td>Din henvendelse</td><td>24 måneder efter vores seneste kontakt</td></tr>
               <tr><td>Registrering af flyerbesøg</td><td>12 måneder</td></tr>
               <tr><td>Spamværnets log over krypterede IP-adresser</td><td>30 dage</td></tr>
+              <tr><td>Loggen over bestilte login-links</td><td>Ryddes løbende, når posterne er over 7 dage gamle</td></tr>
             </tbody>
           </table>
         </div>
+        <p>
+          Forløb på kundesiden slettes ikke automatisk. Jeg sletter forløbet med alle rapporter
+          og forældrenes adgang senest 12 måneder efter den sidste undervisningsgang, og med
+          det samme, hvis I beder om det.
+        </p>
         <p>
           Bliver vi enige om et undervisningsforløb, kan jeg have pligt til at gemme
           bogføringsmateriale i fem år efter regnskabsårets udløb. Det gælder fakturaer og
@@ -220,6 +286,11 @@
           Al trafik til og fra siden er krypteret. Henvendelserne ligger i en database, hvor
           adgangen er lukket på rækkeniveau: kun min egen konto kan læse dem, og den offentlige
           nøgle i sidens kode giver i sig selv ingen adgang til noget som helst.
+        </p>
+        <p>
+          Kundesiden bruger samme lukning på rækkeniveau. Login-links virker i en time og kun
+          én gang, og siden svarer det samme, uanset om en mailadresse er tilknyttet et forløb,
+          så ingen kan bruge den til at finde ud af, hvem der er kunde.
         </p>
 
         <h2>Ændringer</h2>
