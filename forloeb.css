@@ -109,8 +109,9 @@ input:focus, select:focus, textarea:focus {
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--heading); }
 .brand-mark {
   display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px;
-  background: var(--grad-gold); color: #ffffff; font-weight: 800; font-size: 0.95rem;
-  box-shadow: 0 6px 18px -6px rgba(31, 77, 58, 0.55);
+  background: var(--gold); color: var(--bg);
+  /* Samme tegning som favicon.svg: kursiv serif, creme på grøn */
+  font: italic 700 1.15rem/1 Georgia, serif;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-text strong { font-size: 0.98rem; }
