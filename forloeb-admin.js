@@ -8,12 +8,16 @@ import {
   supabase, FORLOEB_SELECT, toCustomer, stats, flags, today,
   fmtDate, fmtNum, fmtHours, firstName, possessive, esc,
 } from "./forloeb-common.js";
+import {
+  loadInvoices, invoiceStat, invoiceCard, settingsForm, refreshInvoiceTotal,
+  handleInvoiceSubmit, handleInvoiceClick,
+} from "./faktura-admin.js";
 
 const $ = (id) => document.getElementById(id);
 
 let customers = [];
 let activeId = null;
-let mode = "view"; // "view" eller "new"
+let mode = "view"; // "view", "new" eller "settings" (fakturaoplysninger)
 let editingSessionId = null;
 
 const active = () => customers.find((c) => c.id === activeId) || null;
@@ -35,7 +39,10 @@ function showError(text) {
 /* ---------- Data ---------- */
 
 async function load() {
-  const { data, error } = await supabase.from("forloeb").select(FORLOEB_SELECT).order("student");
+  const [{ data, error }] = await Promise.all([
+    supabase.from("forloeb").select(FORLOEB_SELECT).order("student"),
+    loadInvoices(),
+  ]);
   if (error) { showError(`Kunne ikke hente forløbene: ${error.message}`); return false; }
   customers = (data || []).map(toCustomer);
   if (!active()) activeId = customers[0] ? customers[0].id : null;
@@ -78,7 +85,7 @@ function renderStats() {
     <div class="stat"><b>${customers.length}</b><span>aktive forløb</span></div>
     <div class="stat"><b>${esc(fmtNum(hoursLeft))}</b><span>solgte timer, der mangler at blive afholdt</span></div>
     <div class="stat${missing ? " alert" : ""}"><b>${missing}</b><span>rapporter mangler</span></div>
-    <div class="stat${low ? " alert" : ""}"><b>${low}</b><span>pakker er ved at være brugt</span></div>`;
+    <div class="stat${low ? " alert" : ""}"><b>${low}</b><span>pakker er ved at være brugt</span></div>${invoiceStat()}`;
 }
 
 function renderList() {
@@ -139,6 +146,7 @@ function sessionForm(c) {
 function renderDetail() {
   const box = $("detail");
   if (mode === "new") { box.innerHTML = newCustomerForm(); return; }
+  if (mode === "settings") { box.innerHTML = settingsForm(); return; }
   const c = active();
   if (!c) { box.innerHTML = `<div class="card"><p class="muted">Vælg en kunde, eller opret den første.</p></div>`; return; }
   const st = stats(c);
@@ -202,6 +210,8 @@ function renderDetail() {
       </section>
     </div>
 
+    ${invoiceCard(c)}
+
     <form id="plan-form" class="card">
       <h2>Forløbet</h2>
       <div class="form-grid">
@@ -264,7 +274,19 @@ function render() {
   renderStats();
   renderList();
   renderDetail();
+  refreshInvoiceTotal();
 }
+
+/* Det, fakturadelen (faktura-admin.js) må bede denne side om. */
+const ui = {
+  toast, showError,
+  reload: () => load(),
+  setMode: (next) => {
+    mode = next;
+    render();
+    $("detail").scrollIntoView({ behavior: "smooth", block: "start" });
+  },
+};
 
 /* ---------- Handlinger ---------- */
 
@@ -290,18 +312,25 @@ $("new-customer").addEventListener("click", () => {
 $("detail").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.target;
-  const submit = form.querySelector('[type="submit"]');
-  if (submit.disabled) return;
-  submit.disabled = true;
+  const submits = [...form.querySelectorAll('[type="submit"]')].filter((b) => !b.disabled);
+  if (form.dataset.busy) return;
+  form.dataset.busy = "1";
+  submits.forEach((b) => { b.disabled = true; });
   try {
-    await handleSubmit(form, formValues(form));
+    await handleSubmit(form, formValues(form), event.submitter);
   } finally {
-    if (submit.isConnected) submit.disabled = false;
+    delete form.dataset.busy;
+    submits.forEach((b) => { if (b.isConnected) b.disabled = false; });
   }
 });
 
-async function handleSubmit(form, v) {
+$("detail").addEventListener("input", (event) => {
+  if (event.target.closest("#invoice-form")) refreshInvoiceTotal(event.target);
+});
+
+async function handleSubmit(form, v, submitter) {
   const c = active();
+  if (await handleInvoiceSubmit(form, v, c, submitter, ui)) return;
 
   if (form.id === "customer-form") {
     showError("");
@@ -370,6 +399,7 @@ $("detail").addEventListener("click", async (event) => {
   const { action, id, email } = button.dataset;
 
   if (action === "cancel-new") { mode = "view"; render(); return; }
+  if (await handleInvoiceClick(action, button, ui)) return;
   if (!c) return;
 
   if (action === "resend") {
