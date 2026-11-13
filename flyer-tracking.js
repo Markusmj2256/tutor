@@ -22,7 +22,7 @@
     init(endpoint, key) {
       const url = new URL(location.href);
       const flyer = url.searchParams.get("flyer");
-      if (!/^f[1-5]$/.test(flyer || "") || !PAGES.has(url.pathname)) {
+      if (!/^f[1-9][0-9]?$/.test(flyer || "") || !PAGES.has(url.pathname)) {
         return { attribution: async () => ({}) };
       }
       let visit = url.searchParams.get("fv");

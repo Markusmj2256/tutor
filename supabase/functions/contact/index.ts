@@ -17,19 +17,20 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.116.0";
 
+// Siden hostes på Cloudflare Pages. lokaltutor.dk står klar, så formularerne
+// virker i samme øjeblik domænet peges på projektet — uden en ny udrulning.
 const ALLOWED_ORIGINS = [
-  "https://lokaltutor.vercel.app",
-  "https://lokaltutor-johsens.vercel.app",
-  "https://lokaltutor-git-main-johsens.vercel.app",
-  "https://markusmj2256.github.io",
   "https://lokaltutor.dk",
   "https://www.lokaltutor.dk",
+  "https://lokaltutor.pages.dev",
+  "https://markusmj2256.github.io",
   "http://127.0.0.1:8099",
   "http://localhost:8099",
 ];
 
-// Vercels forhåndsvisninger får et nyt domæne ved hver deployment.
-const PREVIEW_ORIGIN = /^https:\/\/lokaltutor-[a-z0-9]+-johsens\.vercel\.app$/;
+// Cloudflares forhåndsvisninger får et nyt underdomæne ved hver deployment:
+//   <gren-eller-hash>.lokaltutor.pages.dev
+const PREVIEW_ORIGIN = /^https:\/\/[a-z0-9-]+\.lokaltutor\.pages\.dev$/;
 
 const MAX_PER_HOUR = 5;
 const MAX_PER_DAY = 15;
@@ -39,6 +40,14 @@ const NOTIFY_TO = Deno.env.get("NOTIFY_EMAIL") ?? "markusmj2256@gmail.com";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 // Saltet må ikke kunne gættes, ellers kan et IP-hash slås tilbage til en adresse.
 const IP_SALT = Deno.env.get("IP_SALT") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+// Cloudflare Pages serverer stier uden .html og sender .html-varianten videre
+// dertil. Vi gemmer kun én skrivemåde, så rapporterne ikke splittes i to.
+const canonicalPath = (p: string): string => {
+  const bare = p.replace(/\.html$/, "");
+  return bare === "" || bare === "/index" ? "/" : bare;
+};
+const LANDING_PATHS = ["/", "/eneundervisning", "/holdundervisning"];
 
 function corsHeaders(origin: string | null) {
   const ok = origin && (ALLOWED_ORIGINS.includes(origin) || PREVIEW_ORIGIN.test(origin));
@@ -104,10 +113,11 @@ Deno.serve(async (req: Request) => {
   if (body.action === "flyer_visit") {
     const id = clean(body.visit_id, 36);
     const flyer = clean(body.flyer_id, 10);
-    const path = clean(body.landing_path, 60);
+    const raw = clean(body.landing_path, 60);
+    const path = raw ? canonicalPath(raw) : null;
     if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
-        || !flyer || !/^f[1-5]$/.test(flyer)
-        || !path || !["/", "/index.html", "/eneundervisning.html", "/holdundervisning.html"].includes(path)) {
+        || !flyer || !/^f[1-9][0-9]?$/.test(flyer)
+        || !path || !LANDING_PATHS.includes(path)) {
       return json({ error: "Ugyldigt flyer-link" }, 400);
     }
     const agent = req.headers.get("user-agent") ?? "";

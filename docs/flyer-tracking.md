@@ -13,6 +13,10 @@ Statisk HTML/CSS/JS er bevaret. Kontakt-backenden er udvidet, ikke erstattet.
 | f3 | 03 · Tryghed til at spørge | https://lokaltutor.dk/f/f3 | Forside |
 | f4 | 04 · 1:1-undervisning | https://lokaltutor.dk/f/f4 | 1:1 |
 | f5 | 05 · Holdundervisning | https://lokaltutor.dk/f/f5 | Hold |
+| f6 | V2-01 · Overskud | https://lokaltutor.dk/f/f6 | Forside |
+| f7 | V2-02 · Det siger familierne | https://lokaltutor.dk/f/f7 | Forside |
+| f8 | V2-03 · Mere end den burde | https://lokaltutor.dk/f/f8 | Forside |
+| f9 | V2-04 · Tre trin | https://lokaltutor.dk/f/f9 | Forside |
 
 Cloudflare laver midlertidige redirects (via `_redirects`) fra de korte links til sider med `?flyer=f1`
 osv. Det gør det muligt at ændre landingssiden senere uden at genoptrykke QR.

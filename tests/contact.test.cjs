@@ -14,7 +14,7 @@ function setup() {
   vm.runInNewContext(code, { Deno: { env: { get: name => name === 'RESEND_API_KEY' ? undefined : 'test-only' }, serve: fn => { handler = fn; } },
     createClient: () => sb, crypto: webcrypto, TextEncoder, Request, Response, console,
     fetch: () => { throw Error('No email sending allowed in tests'); } });
-  return { calls, request: (body, origin = 'https://lokaltutor.vercel.app') => handler(new Request('https://backend.example', { method: 'POST', headers: { origin, 'Content-Type': 'application/json', 'User-Agent': 'Test browser' }, body: JSON.stringify(body) })) };
+  return { calls, request: (body, origin = 'https://lokaltutor.dk') => handler(new Request('https://backend.example', { method: 'POST', headers: { origin, 'Content-Type': 'application/json', 'User-Agent': 'Test browser' }, body: JSON.stringify(body) })) };
 }
 test('visit request only registers a visit; no lead or email', async () => {
   const s = setup(); const id = randomUUID();
