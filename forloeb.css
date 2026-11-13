@@ -296,6 +296,7 @@ details.inline[open] > summary { margin-bottom: 12px; }
 @media (max-width: 900px) {
   .summary, .report-grid, .two-col { grid-template-columns: 1fr; }
   .admin-layout { grid-template-columns: 1fr; }
+  .topbar, .topbar-actions { flex-wrap: wrap; }
   .cust-list { position: static; }
   .admin-stats { grid-template-columns: 1fr 1fr; }
   .report-row { grid-template-columns: 34px 1fr auto; }

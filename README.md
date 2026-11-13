@@ -9,6 +9,7 @@ Lys, varm premium-landingside målrettet forældre til gymnasieelever i Gentofte
 - `admin.html` / `admin.js` — intern side med indkomne henvendelser
 - `forloeb.html` / `forloeb.js` — kundeside: forældre logger ind med et link på mail og følger barnets forløb
 - `forloeb-admin.html` / `forloeb-admin.js` — backend til forløb: timer, forældreadgang og rapporter (samme login som admin)
+- `faktura-admin.js` — fakturering i forløb-backend; PDF, nummer og mail laves af edge-funktionen `supabase/functions/faktura`
 - `forloeb-common.js` / `forloeb.css` — fælles kode og design for de to
 - `privatliv.html` — privatlivspolitik
 - `flyer-tracking.js` — flyerbesøg og attribution på tværs af sider
