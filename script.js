@@ -2,31 +2,59 @@
 (() => {
   "use strict";
 
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const isTouch = window.matchMedia("(hover: none)").matches;
+  // Klassen "js" sættes i <head>, når browseren kan IntersectionObserver og
+  // brugeren ikke har bedt om reduceret bevægelse. Uden den animeres intet.
+  const root = document.documentElement;
+  const motion = root.classList.contains("js");
 
-  /* ---------- Header: scrolled state + progress bar ---------- */
+  /* ---------- Scroll: header, kontaktbjælke, parallax og trin-linje ---------- */
+  // Alt samles i ét requestAnimationFrame pr. scroll og skriver kun
+  // CSS-variabler og klasser, så browseren kan nøjes med at flytte lag.
   const header = document.getElementById("site-header");
-  const progress = document.getElementById("progress");
   const mobileCta = document.getElementById("mobile-cta");
   const hero = document.getElementById("hero");
   const contactSection = document.getElementById("kontakt");
+  const parallaxImages = motion ? [...document.querySelectorAll(".photo-frame img")] : [];
+  const steps = motion ? document.querySelector(".steps") : null;
 
-  const onScroll = () => {
+  let queued = false;
+  const frame = () => {
+    queued = false;
     const y = window.scrollY;
-    if (header) header.classList.toggle("scrolled", y > 12);
-
-    const doc = document.documentElement;
-    const max = doc.scrollHeight - window.innerHeight;
-    if (progress) progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+    const vh = window.innerHeight;
+    if (header) header.classList.toggle("scrolled", y > 8);
 
     if (mobileCta && hero) {
-      const nearContact = contactSection && contactSection.getBoundingClientRect().top < window.innerHeight * 0.75;
+      const nearContact = contactSection && contactSection.getBoundingClientRect().top < vh * 0.75;
       mobileCta.classList.toggle("show", y > hero.offsetHeight * 0.7 && !nearContact);
     }
+
+    // Billedet er skaleret 8 % op (se styles.css), så der er 4 % luft i hver
+    // side. Vi bruger 3,5 % af højden, så kanten aldrig kommer til syne.
+    parallaxImages.forEach((img) => {
+      const r = img.parentElement.getBoundingClientRect();
+      if (r.bottom < -80 || r.top > vh + 80) return;
+      const t = Math.max(-0.5, Math.min(0.5, (r.top + r.height / 2 - vh / 2) / vh));
+      img.style.setProperty("--py", (t * -0.07 * r.height).toFixed(1));
+    });
+
+    if (steps) {
+      const r = steps.getBoundingClientRect();
+      const mark = vh * 0.62;
+      steps.style.setProperty("--p", Math.min(1, Math.max(0, (mark - r.top) / r.height)).toFixed(3));
+      [...steps.children].forEach((step) =>
+        step.classList.toggle("on", step.getBoundingClientRect().top < mark)
+      );
+    }
+  };
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(frame);
   };
   window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  window.addEventListener("resize", onScroll, { passive: true });
+  frame();
 
   /* ---------- Mobile menu ---------- */
   const navToggle = document.getElementById("nav-toggle");
@@ -51,97 +79,75 @@
   }
 
   /* ---------- Scroll reveals ---------- */
-  const revealEls = document.querySelectorAll(".reveal, .reveal-stagger");
-  if ("IntersectionObserver" in window && !prefersReduced) {
-    document.querySelectorAll(".reveal-stagger").forEach((group) => {
-      [...group.children].forEach((child, i) => {
-        child.style.setProperty("--delay", `${i * 0.09}s`);
-      });
-    });
+  if (motion) {
+    // Overskrifter deles i ord, så de kan stige op ét ad gangen. Teksten og
+    // rækkefølgen er uændret, så skærmlæsere læser den som før.
+    const splitWords = (el) => {
+      let n = 0;
+      const walk = (node) => {
+        [...node.childNodes].forEach((child) => {
+          if (child.nodeType === Node.ELEMENT_NODE) return walk(child);
+          if (child.nodeType !== Node.TEXT_NODE) return;
+          const parts = document.createDocumentFragment();
+          child.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (!part.trim()) return parts.append(" ");
+            const word = document.createElement("span");
+            word.className = "w";
+            const inner = document.createElement("span");
+            inner.textContent = part;
+            inner.style.setProperty("--w", n++);
+            word.append(inner);
+            parts.append(word);
+          });
+          child.replaceWith(parts);
+        });
+      };
+      walk(el);
+      el.classList.add("split");
+    };
+    document.querySelectorAll(".section-title.reveal").forEach(splitWords);
+
+    const setDelays = (items, step, offset = 0) =>
+      items.forEach((el, i) => el.style.setProperty("--delay", `${(offset + i * step).toFixed(2)}s`));
+    document.querySelectorAll(".reveal-stagger").forEach((group) => setDelays([...group.children], 0.08));
+    // Hero'en er synlig fra start, så dens dele får hver sin forsinkelse.
+    setDelays([...document.querySelectorAll(".hero-copy > .reveal")], 0.08, 0.05);
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            io.unobserve(entry.target);
-          }
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("visible");
+          io.unobserve(entry.target);
         });
       },
-      { threshold: 0.18, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
     );
-    revealEls.forEach((el) => io.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add("visible"));
-  }
+    document.querySelectorAll(".reveal, .reveal-stagger").forEach((el) => io.observe(el));
 
-  /* ---------- Animerede tællere ---------- */
-  const counters = document.querySelectorAll(".count");
-  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-  const animateCount = (el) => {
-    const target = parseInt(el.dataset.count, 10) || 0;
-    const dur = 1500;
-    const start = performance.now();
-    const tick = (now) => {
-      const p = Math.min((now - start) / dur, 1);
-      el.textContent = Math.round(easeOut(p) * target);
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-  if ("IntersectionObserver" in window && !prefersReduced) {
+    /* Nøgletal tæller op én gang, når de kommer til syne. Det færdige tal
+       står i HTML'en, så det også er rigtigt uden JavaScript. */
     const cio = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCount(entry.target);
-            cio.unobserve(entry.target);
-          }
+          if (!entry.isIntersecting) return;
+          cio.unobserve(entry.target);
+          const el = entry.target;
+          const target = parseInt(el.dataset.count, 10) || 0;
+          const start = performance.now() + 450;
+          el.textContent = "0";
+          const tick = (now) => {
+            const t = Math.min(1, Math.max(0, (now - start) / 1300));
+            el.textContent = Math.round((1 - Math.pow(1 - t, 4)) * target);
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
         });
       },
       { threshold: 0.6 }
     );
-    counters.forEach((el) => cio.observe(el));
-  } else {
-    counters.forEach((el) => (el.textContent = el.dataset.count));
-  }
-
-  /* ---------- Parallax på matematik-glyffer ---------- */
-  if (hero && !prefersReduced && !isTouch) {
-    const glyphs = document.querySelectorAll(".glyph");
-    let raf = null;
-    hero.addEventListener("mousemove", (e) => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        const r = hero.getBoundingClientRect();
-        const dx = (e.clientX - r.left) / r.width - 0.5;
-        const dy = (e.clientY - r.top) / r.height - 0.5;
-        glyphs.forEach((g) => {
-          const depth = parseFloat(g.dataset.depth) || 3;
-          g.style.transform = `translate(${dx * depth * -6}px, ${dy * depth * -6}px)`;
-        });
-        raf = null;
-      });
-    });
-  }
-
-  /* ---------- Tilt-effekt på kort ---------- */
-  if (!prefersReduced && !isTouch) {
-    document.querySelectorAll("[data-tilt]").forEach((card) => {
-      let raf = null;
-      card.addEventListener("mousemove", (e) => {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          const r = card.getBoundingClientRect();
-          const px = (e.clientX - r.left) / r.width - 0.5;
-          const py = (e.clientY - r.top) / r.height - 0.5;
-          card.style.transform = `perspective(900px) rotateX(${py * -5}deg) rotateY(${px * 6}deg) translateY(-4px)`;
-          raf = null;
-        });
-      });
-      card.addEventListener("mouseleave", () => {
-        card.style.transform = "";
-      });
-    });
+    document.querySelectorAll("[data-count]").forEach((el) => cio.observe(el));
   }
 
   /* ---------- FAQ accordion ---------- */
@@ -186,24 +192,6 @@
     const subjectSelect = groupForm.querySelector('[name="subject"]');
     const otherField = document.getElementById("other-subject-field");
     const otherInput = document.getElementById("other-subject");
-    // Det gratis prøvehold i november har flere ansøgere end pladser. Derfor
-    // bliver kommentarfeltet til et motivationsfelt — og det bliver påkrævet.
-    const freeNote = document.getElementById("free-hold-note");
-    const messageField = document.getElementById("group-message");
-    const messageLabel = document.getElementById("group-message-label");
-    const MESSAGE_TEXT = {
-      normal: {
-        label: "Dage, behov eller andre ønsker (valgfrit)",
-        placeholder:
-          "Fx hvilke dage der passer, hvilke emner der driller, eller om du søger sammen med en ven",
-      },
-      free: {
-        label: "Din motivation — hvorfor vil du gerne med på holdet?",
-        placeholder:
-          "Fx hvad du gerne vil blive bedre til, hvad der driller i matematikken, og hvad eksamen betyder for dig",
-      },
-    };
-
     if (subjectSelect) {
       // Valgene genkendes på data-attributter frem for på deres tekst, så
       // formuleringen i formularen kan ændres uden at logikken går i stykker.
@@ -215,15 +203,6 @@
           otherField.hidden = !isOther;
           otherInput.required = isOther;
           otherInput.disabled = !isOther;
-        }
-
-        const isFree = flag("free");
-        if (freeNote) freeNote.hidden = !isFree;
-        if (messageField && messageLabel) {
-          const text = isFree ? MESSAGE_TEXT.free : MESSAGE_TEXT.normal;
-          messageField.required = isFree;
-          messageField.placeholder = text.placeholder;
-          messageLabel.textContent = text.label;
         }
       };
 

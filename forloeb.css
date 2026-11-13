@@ -2,21 +2,22 @@
    Samme palet og skrifter som resten af lokaltutor.dk. */
 
 :root {
-  --bg: #fbfaf7;
-  --bg-2: #f5f2eb;
+  --bg: #faf5ea;
+  --bg-2: #f2ebdb;
   --surface: #ffffff;
-  --line: #eae5db;
-  --line-strong: #ddd6c8;
-  --text: #3c382f;
-  --heading: #211e19;
-  --muted: #6f685c;
-  --gold: #d9912c;
-  --gold-2: #9d5c0c;
-  --gold-soft: #fdf6e9;
+  --line: #e8e0cf;
+  --line-strong: #d8cfbb;
+  --text: #2f3832;
+  --heading: #1b2420;
+  --muted: #59625b;
+  /* Variablerne hedder stadig "gold" fra det tidligere tema; værdien er sidens grønne. */
+  --gold: #1f4d3a;
+  --gold-2: #1f4d3a;
+  --gold-soft: #e2eadb;
   --clay: #9c4a45;
   --sage: #76856a;
   --sage-soft: #eef5ec;
-  --grad-gold: linear-gradient(135deg, #f2be6a 0%, #e0a03c 50%, #c9811a 100%);
+  --grad-gold: #1f4d3a;
   --shadow-sm: 0 2px 10px rgba(48, 36, 18, 0.05);
   --shadow-md: 0 12px 36px -10px rgba(48, 36, 18, 0.14);
   --radius: 20px;
@@ -46,7 +47,7 @@ a { color: var(--gold-2); }
 
 /* ---------- Bannere ---------- */
 .preview-banner {
-  background: var(--gold-soft); border-bottom: 1px solid #ecd9b4; color: #7d4d0a;
+  background: var(--gold-soft); border-bottom: 1px solid #c5d3c0; color: #1f4d3a;
   font-size: 0.86rem; font-weight: 600; text-align: center; padding: 8px 16px;
 }
 
@@ -58,7 +59,7 @@ a { color: var(--gold-2); }
   cursor: pointer; text-decoration: none;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
-.button-primary { background: var(--grad-gold); color: #2a1d04; box-shadow: 0 8px 22px -8px rgba(217, 145, 44, 0.6); }
+.button-primary { background: var(--grad-gold); color: #ffffff; }
 .button-primary:hover { transform: translateY(-1px); }
 .button-ghost { background: #fff; color: var(--heading); border-color: var(--line-strong); }
 .button-ghost:hover { border-color: var(--gold); }
@@ -79,7 +80,7 @@ input, select, textarea {
 }
 textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
 input:focus, select:focus, textarea:focus {
-  outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(217, 145, 44, 0.16);
+  outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(31, 77, 58, 0.16);
 }
 .form-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 .form-grid .span-all { grid-column: 1 / -1; }
@@ -87,7 +88,7 @@ input:focus, select:focus, textarea:focus {
 
 .notice { padding: 11px 14px; border-radius: 11px; font-size: 0.88rem; }
 .notice-ok { background: var(--sage-soft); border: 1px solid #c5debf; color: #3f6136; }
-.notice-info { background: var(--gold-soft); border: 1px solid #ecd9b4; color: #7d4d0a; }
+.notice-info { background: var(--gold-soft); border: 1px solid #c5d3c0; color: #1f4d3a; }
 .notice-warn { background: #fdf0ef; border: 1px solid #e8c4c1; color: #8a3b36; }
 
 .card {
@@ -108,8 +109,8 @@ input:focus, select:focus, textarea:focus {
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--heading); }
 .brand-mark {
   display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px;
-  background: var(--grad-gold); color: #2a1d04; font-weight: 800; font-size: 0.95rem;
-  box-shadow: 0 6px 18px -6px rgba(240, 164, 55, 0.55);
+  background: var(--grad-gold); color: #ffffff; font-weight: 800; font-size: 0.95rem;
+  box-shadow: 0 6px 18px -6px rgba(31, 77, 58, 0.55);
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-text strong { font-size: 0.98rem; }
@@ -160,11 +161,11 @@ input:focus, select:focus, textarea:focus {
 .road-scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
 .road-scroll svg { display: block; }
 .road-track { fill: none; stroke: var(--line-strong); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 2 13; }
-.road-done-bg { fill: none; stroke: #f5dfb8; stroke-width: 16; stroke-linecap: round; }
+.road-done-bg { fill: none; stroke: #cddbc9; stroke-width: 16; stroke-linecap: round; }
 .road-done { fill: none; stroke: url(#roadGold); stroke-width: 6; stroke-linecap: round; }
 .road-node { cursor: pointer; }
-.road-node .dot { fill: var(--gold); stroke: #fff; stroke-width: 4; filter: drop-shadow(0 4px 8px rgba(157, 92, 12, 0.3)); transition: r 0.2s ease; }
-.road-node .num { fill: #2a1d04; font: 800 13px var(--font-body); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.road-node .dot { fill: var(--gold); stroke: #fff; stroke-width: 4; filter: drop-shadow(0 4px 8px rgba(31, 77, 58, 0.3)); transition: r 0.2s ease; }
+.road-node .num { fill: #ffffff; font: 800 13px var(--font-body); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .road-node .halo { fill: none; stroke: var(--gold-2); stroke-width: 2.5; opacity: 0; }
 .road-node.is-selected .halo { opacity: 1; }
 .road-node:hover .dot, .road-node:focus-visible .dot { r: 20; }
@@ -222,7 +223,7 @@ input:focus, select:focus, textarea:focus {
   background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px;
 }
 .cust:hover { border-color: var(--line-strong); }
-.cust.is-active { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217, 145, 44, 0.16); }
+.cust.is-active { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(31, 77, 58, 0.16); }
 .cust-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
 .cust-top strong { color: var(--heading); font-size: 1rem; }
 .cust-top span { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
@@ -230,7 +231,7 @@ input:focus, select:focus, textarea:focus {
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { white-space: nowrap; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--bg-2); color: var(--muted); }
 .chip.report, .chip.hours { background: #fdf0ef; color: #8a3b36; }
-.chip.plan, .chip.login { background: var(--gold-soft); color: #7d4d0a; }
+.chip.plan, .chip.login { background: var(--gold-soft); color: #1f4d3a; }
 .chip.ok { background: var(--sage-soft); color: #3f6136; }
 
 .detail { display: grid; gap: 16px; min-width: 0; }

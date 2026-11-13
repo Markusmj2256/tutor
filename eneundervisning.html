@@ -14,19 +14,17 @@
   <meta property="og:url" content="https://lokaltutor.dk/eneundervisning">
   <meta property="og:image" content="https://lokaltutor.dk/assets/photos/ene-hero.jpg">
   <meta property="og:image:alt" content="Markus Johnsen og en gymnasieelev arbejder sammen ved computeren">
-  <meta name="theme-color" content="#fbfaf7">
+  <meta name="theme-color" content="#faf5ea">
   <link rel="preload" as="image" href="assets/photos/ene-hero.webp" imagesrcset="assets/photos/ene-hero-900.webp 900w, assets/photos/ene-hero.webp 1500w" imagesizes="(max-width: 1024px) 92vw, 46vw">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="assets/fonts.css">
-  <link rel="stylesheet" href="styles.css?v=8">
-  <noscript><style>.reveal, .reveal-stagger > * { opacity: 1; transform: none; }</style></noscript>
+  <link rel="stylesheet" href="styles.css?v=10">
+  <script>if("IntersectionObserver" in window&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("js")</script>
 </head>
 <body>
-  <div class="progress-bar" aria-hidden="true"><span id="progress"></span></div>
 
   <header class="site-header" id="site-header">
     <a class="brand" href="index.html" aria-label="Markus Johnsen — forside">
-      <span class="brand-mark">MJ</span>
       <span class="brand-text"><strong>Markus Johnsen</strong><small>Matematik & naturfag</small></span>
     </a>
     <nav class="site-nav" id="site-nav" aria-label="Primær navigation">
@@ -48,16 +46,9 @@
 
   <main id="top">
     <section class="hero detail-hero" id="hero" aria-labelledby="hero-title">
-      <div class="aurora" aria-hidden="true"><div class="blob blob-a"></div><div class="blob blob-b"></div><div class="blob blob-c"></div></div>
-      <div class="hero-grid-lines" aria-hidden="true"></div>
-      <div class="math-field" aria-hidden="true">
-        <span class="glyph" data-depth="3" style="--x:8%; --y:18%; --d:11s; --s:2.2rem">∫</span>
-        <span class="glyph" data-depth="5" style="--x:44%; --y:84%; --d:16s; --s:2.4rem">√x</span>
-        <span class="glyph" data-depth="4" style="--x:78%; --y:14%; --d:12s; --s:1.5rem">ƒ(x)</span>
-      </div>
       <div class="hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow reveal"><span class="dot" aria-hidden="true"></span>1:1-undervisning · Gentofte & Lyngby</p>
+          <p class="eyebrow reveal">1:1-undervisning · Gentofte & Lyngby</p>
           <h1 id="hero-title" class="reveal">Undervisning med plads til <em>den enkelte</em></h1>
           <p class="hero-lede reveal">Én elev, ét fælles fokus. Jeg hjælper med matematik og naturfag i gymnasiet og 8.–9. klasse — i elevens eget tempo og med en plan, der passer til hverdagen.</p>
           <div class="hero-actions reveal">
@@ -69,15 +60,15 @@
             <li>Tutor siden 2021 · 5+ års erfaring</li>
           </ul>
         </div>
-        <div class="hero-visual reveal">
-          <figure class="photo-frame hero-photo ratio-5-4">
+        <div class="hero-visual">
+          <figure class="photo-frame hero-photo ratio-5-4 reveal" style="--delay:0.15s">
             <picture>
               <source type="image/webp" srcset="assets/photos/ene-hero-900.webp 900w, assets/photos/ene-hero.webp 1500w" sizes="(max-width: 1024px) 92vw, 46vw">
               <img src="assets/photos/ene-hero.jpg" srcset="assets/photos/ene-hero-900.jpg 900w, assets/photos/ene-hero.jpg 1500w" sizes="(max-width: 1024px) 92vw, 46vw" alt="Markus Johnsen og en gymnasieelev arbejder sammen ved computeren med noter og opgaver" width="1500" height="1002" fetchpriority="high">
             </picture>
-            <figcaption class="photo-caption"><span class="cap-dot" aria-hidden="true"></span>Ro til at spørge — og tid til at forstå</figcaption>
+            <figcaption class="photo-caption">Ro til at spørge — og tid til at forstå</figcaption>
           </figure>
-          <div class="float-chip chip-a" aria-hidden="true"><strong>1000+</strong><span>timers undervisning</span></div>
+          <div class="float-chip reveal" style="--delay:1s" aria-hidden="true"><strong>1000+</strong><span>timers undervisning</span></div>
         </div>
       </div>
     </section>
@@ -89,7 +80,7 @@
             <source type="image/webp" srcset="assets/photos/ene-tilgang-860.webp 860w, assets/photos/ene-tilgang.webp 1400w" sizes="(max-width: 1024px) 90vw, 42vw">
             <img src="assets/photos/ene-tilgang.jpg" srcset="assets/photos/ene-tilgang-860.jpg 860w, assets/photos/ene-tilgang.jpg 1400w" sizes="(max-width: 1024px) 90vw, 42vw" alt="Markus Johnsen gennemgår en opgave ved computeren, mens en gymnasieelev følger med ved siden af" loading="lazy" width="1400" height="935">
           </picture>
-          <figcaption class="photo-caption"><span class="cap-dot" aria-hidden="true"></span>Vi regner opgaverne igennem sammen — indtil eleven kan selv</figcaption>
+          <figcaption class="photo-caption">Vi regner opgaverne igennem sammen — indtil eleven kan selv</figcaption>
         </figure>
         <div class="about-copy">
           <p class="section-kicker reveal">Min tilgang & erfaring</p>
@@ -177,7 +168,6 @@
     </section>
 
     <section class="section section-contact" id="kontakt" aria-labelledby="kontakt-title">
-      <div class="contact-glow" aria-hidden="true"></div>
       <div class="section-inner contact-layout">
         <div class="contact-copy">
           <p class="section-kicker reveal">Book gratis afklaringssamtale</p>
@@ -255,7 +245,6 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <span class="brand-mark">MJ</span>
         <p>Markus Johnsen · Privatundervisning i matematik, fysik & kemi<br>Gentofte, Lyngby, Virum, Charlottenlund & Hellerup<br><span class="footer-legal">Lokaltutor · CVR 46785290</span></p>
       </div>
       <nav class="footer-nav" aria-label="Footer">
@@ -294,6 +283,6 @@
   </dialog>
 
   <script src="flyer-tracking.js?v=2"></script>
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
 </body>
 </html>
