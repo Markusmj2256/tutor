@@ -377,7 +377,9 @@ function render() {
   $("count-tilmeldt").textContent = counts.tilmeldt;
   $("count-alle").textContent = leads.length;
 
-  const rows = visibleLeads();
+  // Nye henvendelser først, derefter resten. Inden for hver gruppe nyeste først
+  // (rækkefølgen fra databasen bevares, fordi sort er stabil).
+  const rows = visibleLeads().sort((a, b) => Number(b.status === "ny") - Number(a.status === "ny"));
   list.replaceChildren(...rows.map(renderLead));
   empty.hidden = rows.length > 0;
 }

@@ -210,7 +210,7 @@ function renderDetail() {
                   : p.invited ? `inviteret ${esc(fmtDate(p.invited))}, har ikke logget ind`
                     : "invitation ikke sendt"}</span></span>
               <span class="row-actions">
-                <button class="button-link" type="button" data-action="resend" data-id="${esc(p.id)}" data-email="${esc(p.email)}">Send link igen</button>
+                <button class="button-link" type="button" data-action="resend" data-id="${esc(p.id)}" data-email="${esc(p.email)}">${p.invited ? "Send link igen" : "Send link"}</button>
                 <button class="button-link danger" type="button" data-action="del-parent" data-id="${esc(p.id)}" data-email="${esc(p.email)}">Fjern adgang</button>
               </span>
             </div>`).join("") || `<p class="muted small">Ingen forældre har adgang endnu.</p>`}
@@ -220,7 +220,10 @@ function renderDetail() {
           <form id="parent-form" class="form-grid">
             <label class="field">Navn<input name="name" required maxlength="80" placeholder="Fornavn Efternavn"></label>
             <label class="field">E-mail<input type="email" name="email" required maxlength="200" placeholder="navn@eksempel.dk"></label>
-            <div class="span-all"><button class="button button-primary button-small" type="submit">Send invitation</button></div>
+            <label class="span-all" style="display:flex;gap:10px;align-items:center;font-size:0.9rem">
+              <input type="checkbox" name="invite" checked style="width:auto"> Send login-link på mail nu
+            </label>
+            <div class="span-all"><button class="button button-primary button-small" type="submit">Gem forælder</button></div>
           </form>
         </details>
       </section>
@@ -289,11 +292,12 @@ function newCustomerForm() {
         <label data-pakke-only style="display:flex;gap:10px;align-items:center;align-self:end;font-size:0.9rem;padding-bottom:12px">
           <input type="checkbox" name="paid" style="width:auto"> Pakken er allerede betalt
         </label>
-        <label class="field">Forælderens navn<input name="parentName" required maxlength="80"></label>
-        <label class="field">Forælderens e-mail<input type="email" name="parentEmail" required maxlength="200"></label>
-        <label class="field span-all">Mål for forløbet<input name="goal" placeholder="F.eks. Tryg til eksamen i maj" maxlength="80"></label>
+        <label class="field">Forælderens navn (valgfri)<input name="parentName" maxlength="80"></label>
+        <label class="field">Forælderens e-mail (valgfri)<input type="email" name="parentEmail" maxlength="200"></label>
+        <p class="small muted span-all" style="margin:-4px 0 0">Lad forælderfelterne stå tomme, hvis de ikke skal bruges nu. Du kan altid give en forælder adgang senere under "Forældre-login".</p>
+        <label class="field span-all">Mål for forløbet (valgfri)<input name="goal" placeholder="F.eks. Tryg til eksamen i maj" maxlength="80"></label>
         <label class="span-all" style="display:flex;gap:10px;align-items:center;font-size:0.9rem">
-          <input type="checkbox" name="invite" checked style="width:auto"> Send forælderen en mail med login-link nu
+          <input type="checkbox" name="invite" checked style="width:auto"> Send forælderen en mail med login-link nu (kun hvis der er en e-mail)
         </label>
       </div>
       <div class="form-actions">
@@ -377,19 +381,26 @@ async function handleSubmit(form, v, submitter) {
 
   if (form.id === "customer-form") {
     showError("");
+    const parentName = text(v.parentName);
+    const email = text(v.parentEmail).toLowerCase();
+    if (Boolean(parentName) !== Boolean(email)) {
+      showError("Udfyld både forælderens navn og e-mail, eller lad begge felter stå tomme.");
+      return;
+    }
     const billing = v.billing === "enkelt" ? "enkelt" : "pakke";
     const { data: created, error } = await supabase.from("forloeb").insert({
       student: text(v.student), grade: text(v.grade), subject: text(v.subject), goal: text(v.goal), billing,
     }).select("id").single();
     if (error) { showError(`Forløbet kunne ikke oprettes: ${error.message}`); return; }
-    const email = text(v.parentEmail).toLowerCase();
     const [pkg, parent] = await Promise.all([
       billing === "pakke"
         ? supabase.from("forloeb_packages").insert({
           forloeb_id: created.id, hours: Number(v.hours), paid_on: v.paid ? today() : null,
         })
         : { error: null },
-      supabase.from("forloeb_parents").insert({ forloeb_id: created.id, name: text(v.parentName), email }).select("id").single(),
+      email
+        ? supabase.from("forloeb_parents").insert({ forloeb_id: created.id, name: parentName, email }).select("id").single()
+        : { error: null, data: null },
     ]);
     activeId = created.id;
     mode = "view";
@@ -398,7 +409,8 @@ async function handleSubmit(form, v, submitter) {
       showError(`Forløbet er oprettet, men ${pkg.error ? "timerne" : "forælderen"} kunne ikke gemmes: ${(pkg.error || parent.error).message}`);
       return;
     }
-    if (v.invite) await sendInvite(parent.data.id, email);
+    if (!email) toast("Forløbet er oprettet uden forælder. Du kan tilføje en under \"Forældre-login\".");
+    else if (v.invite) await sendInvite(parent.data.id, email);
     else toast("Forløbet er oprettet. Invitationen er ikke sendt endnu.");
     return;
   }
@@ -416,7 +428,8 @@ async function handleSubmit(form, v, submitter) {
     const { data, error } = await supabase.from("forloeb_parents")
       .insert({ forloeb_id: c.id, name: text(v.name), email }).select("id").single();
     if (error) { showError(`Forælderen kunne ikke gemmes: ${error.message}`); return; }
-    await sendInvite(data.id, email);
+    if (v.invite) await sendInvite(data.id, email);
+    else { await load(); toast(`${text(v.name)} er tilføjet. Tryk "Send link", når de skal have adgang.`); }
   } else if (form.id === "plan-form") {
     await write(
       supabase.from("forloeb").update({
