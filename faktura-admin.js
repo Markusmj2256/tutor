@@ -100,11 +100,11 @@ export function invoiceCard(c) {
     <form id="invoice-form">
       <div class="pick" role="radiogroup" aria-label="Pakke">
         ${Object.entries(PACKAGES).map(([key, p], i) => `
-          <label><input type="radio" name="package" value="${key}" ${i === 0 ? "checked" : ""}>
+          <label><input type="radio" name="package" value="${key}" ${(c.billing === "enkelt" ? key === "enkelt" : i === 0) ? "checked" : ""}>
             <span><strong>${esc(p.title)}</strong>${p.price} kr./time</span></label>`).join("")}
       </div>
       <div class="form-grid" style="margin-top:14px">
-        <label class="field">Antal timer<input type="number" name="hours" value="20" min="0.5" max="500" step="0.5" required></label>
+        <label class="field">Antal timer<input type="number" name="hours" value="${c.billing === "enkelt" ? 2 : 20}" min="0.5" max="500" step="0.5" required></label>
         <label class="field">Sendes til
           <select name="parent_id">${c.parents.map((p) => `<option value="${esc(p.id)}">${esc(p.name)} · ${esc(p.email)}</option>`).join("")}</select>
         </label>

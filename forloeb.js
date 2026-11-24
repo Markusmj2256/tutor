@@ -131,7 +131,8 @@ function curve(points) {
 function renderRoad() {
   const sessions = customer.sessions;
   const st = stats(customer);
-  const hasNext = customer.next.date && customer.next.date >= today() && st.left > 0;
+  const hasNext = customer.next.date && customer.next.date >= today()
+    && (customer.billing === "enkelt" || st.left > 0);
   const futureCount = Math.min(MAX_FUTURE, Math.max(hasNext ? 1 : 0, st.sessionsLeft));
 
   const nodes = sessions.map((s, i) => ({ type: "done", s, n: i + 1 }));
@@ -268,14 +269,20 @@ function renderSummary() {
   const low = st.left <= 3;
   const next = customer.next.date && customer.next.date >= today() ? customer.next : null;
   const count = customer.sessions.length;
-  $("summary").innerHTML = `
+  const hoursCard = customer.billing === "enkelt" ? `
+    <div class="card">
+      <p class="kicker">Timer</p>
+      <p class="big-num">${esc(fmtNum(st.used))} <small>${st.used === 1 ? "time" : "timer"} afholdt</small></p>
+      <p class="small muted">I betaler time for time, så der er ingen pakke at trække fra. ${count} ${count === 1 ? "gang" : "gange"} indtil nu.</p>
+    </div>` : `
     <div class="card">
       <p class="kicker">Timer</p>
       <p class="big-num">${esc(fmtNum(st.left))} <small>${st.left === 1 ? "time" : "timer"} tilbage</small></p>
       <div class="meter${low ? " low" : ""}" role="img" aria-label="${esc(fmtNum(st.used))} af ${esc(fmtNum(st.bought))} timer brugt"><span style="width:${pct}%"></span></div>
       <p class="small muted">${esc(fmtNum(st.used))} af ${esc(fmtNum(st.bought))} købte timer er brugt på ${count} ${count === 1 ? "gang" : "gange"}.</p>
       ${low ? `<p class="notice notice-info" style="margin-top:12px">${st.left === 0 ? "Pakken er brugt." : "Pakken er snart brugt."} Skriv til Markus, hvis I vil fortsætte.</p>` : ""}
-    </div>
+    </div>`;
+  $("summary").innerHTML = `${hoursCard}
     <div class="card">
       <p class="kicker">Næste gang</p>
       ${next

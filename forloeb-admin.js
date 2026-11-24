@@ -80,12 +80,14 @@ async function sendInvite(parentId, email) {
 function renderStats() {
   const hoursLeft = customers.reduce((sum, c) => sum + stats(c).left, 0);
   const missing = customers.filter((c) => flags(c).some((f) => f.kind === "report")).length;
-  const low = customers.filter((c) => stats(c).left <= 3).length;
+  const low = customers.filter((c) => c.billing === "pakke" && stats(c).left <= 3).length;
+  const unpaid = customers.reduce((sum, c) => sum + c.packages.filter((p) => !p.paid).length, 0);
   $("stats").innerHTML = `
     <div class="stat"><b>${customers.length}</b><span>aktive forløb</span></div>
     <div class="stat"><b>${esc(fmtNum(hoursLeft))}</b><span>solgte timer, der mangler at blive afholdt</span></div>
     <div class="stat${missing ? " alert" : ""}"><b>${missing}</b><span>rapporter mangler</span></div>
-    <div class="stat${low ? " alert" : ""}"><b>${low}</b><span>pakker er ved at være brugt</span></div>${invoiceStat()}`;
+    <div class="stat${low ? " alert" : ""}"><b>${low}</b><span>pakker er ved at være brugt</span></div>
+    <div class="stat${unpaid ? " alert" : ""}"><b>${unpaid}</b><span>${unpaid === 1 ? "timepakke er" : "timepakker er"} ikke betalt</span></div>${invoiceStat()}`;
 }
 
 function renderList() {
@@ -93,11 +95,14 @@ function renderList() {
     const st = stats(c);
     const fl = flags(c);
     const pct = st.bought ? Math.min(100, (st.used / st.bought) * 100) : 0;
+    const single = c.billing === "enkelt";
     return `
       <button class="cust${c.id === activeId && mode === "view" ? " is-active" : ""}" type="button" data-customer="${esc(c.id)}">
-        <span class="cust-top"><strong>${esc(c.student)}</strong><span>${esc(fmtNum(st.left))} af ${esc(fmtNum(st.bought))} t tilbage</span></span>
+        <span class="cust-top"><strong>${esc(c.student)}</strong><span>${single
+          ? `Time for time · ${esc(fmtNum(st.used))} t afholdt`
+          : `${esc(fmtNum(st.left))} af ${esc(fmtNum(st.bought))} t tilbage`}</span></span>
         <span class="small muted">${esc([c.subject, c.grade].filter(Boolean).join(" · "))}</span>
-        <span class="meter${st.left <= 3 ? " low" : ""}" style="display:block"><span style="width:${pct}%"></span></span>
+        ${single ? "" : `<span class="meter${st.left <= 3 ? " low" : ""}" style="display:block"><span style="width:${pct}%"></span></span>`}
         <span class="chips">${fl.length
           ? fl.map((f) => `<span class="chip ${f.kind}">${esc(f.text)}</span>`).join("")
           : `<span class="chip ok">Alt er på plads</span>`}</span>
@@ -164,15 +169,26 @@ function renderDetail() {
     <div class="two-col">
       <section class="card">
         <h2>Timer</h2>
+        ${c.billing === "enkelt" ? `
+        <p class="big-num">${esc(fmtNum(st.used))} <small>${st.used === 1 ? "time" : "timer"} afholdt</small></p>
+        <p class="small muted">Time for time (400 kr. pr. time). Der er ingen pakke at trække fra. Skift til timepakke under "Forløbet".</p>` : `
         <p class="big-num">${esc(fmtNum(st.left))} <small>af ${esc(fmtNum(st.bought))} timer tilbage</small></p>
-        <div class="meter${st.left <= 3 ? " low" : ""}"><span style="width:${pct}%"></span></div>
+        <div class="meter${st.left <= 3 ? " low" : ""}"><span style="width:${pct}%"></span></div>`}
         <div class="rows" style="margin-top:12px">
           ${c.packages.map((p) => `
-            <div class="row"><span><strong>${esc(fmtHours(p.hours))}</strong> købt ${esc(fmtDate(p.date))}</span>
-            <button class="button-link danger" type="button" data-action="del-package" data-id="${esc(p.id)}">Fjern</button></div>`).join("")
-            || `<p class="muted small">Ingen timer er lagt ind endnu.</p>`}
+            <div class="row">
+              <span><strong>${esc(fmtHours(p.hours))}</strong> købt ${esc(fmtDate(p.date))}
+                <br><span class="chip ${p.paid ? "ok" : "pay"}" style="display:inline-block;margin-top:5px">${p.paid ? `Betalt ${esc(fmtDate(p.paid))}` : "Ikke betalt"}</span></span>
+              <span class="row-actions">
+                ${p.paid
+                  ? `<button class="button-link" type="button" data-action="pkg-unpaid" data-id="${esc(p.id)}">Fortryd betalt</button>`
+                  : `<button class="button button-primary button-small" type="button" data-action="pkg-paid" data-id="${esc(p.id)}">Markér betalt</button>`}
+                <button class="button-link danger" type="button" data-action="del-package" data-id="${esc(p.id)}">Fjern</button>
+              </span>
+            </div>`).join("")
+            || (c.billing === "enkelt" ? "" : `<p class="muted small">Ingen timer er lagt ind endnu.</p>`)}
         </div>
-        <details class="inline">
+        ${c.billing === "enkelt" ? "" : `<details class="inline">
           <summary>+ Tilføj timepakke</summary>
           <form id="package-form" class="form-grid">
             <label class="field">Antal timer<input type="number" name="hours" value="20" min="0.5" max="500" step="0.5" required list="package-sizes">
@@ -181,7 +197,7 @@ function renderDetail() {
             <label class="field">Købt den<input type="date" name="date" value="${esc(today())}" required></label>
             <div class="span-all"><button class="button button-primary button-small" type="submit">Læg timer til</button></div>
           </form>
-        </details>
+        </details>`}
       </section>
 
       <section class="card">
@@ -220,6 +236,12 @@ function renderDetail() {
         <label class="field">Fag<input name="subject" value="${esc(c.subject)}" maxlength="80"></label>
         <label class="field">Næste gang<input type="date" name="date" value="${esc(c.next.date)}"></label>
         <label class="field">Klokken<input type="time" name="time" value="${esc(c.next.time)}"></label>
+        <label class="field">Betaling
+          <select name="billing">
+            <option value="pakke" ${c.billing === "pakke" ? "selected" : ""}>Timepakke</option>
+            <option value="enkelt" ${c.billing === "enkelt" ? "selected" : ""}>Time for time</option>
+          </select>
+        </label>
         <label class="field span-all">Målet for forløbet (står for enden af vejen)<input name="goal" value="${esc(c.goal)}" maxlength="80"></label>
       </div>
       <div class="form-actions"><button class="button button-ghost button-small" type="submit">Gem</button></div>
@@ -255,7 +277,18 @@ function newCustomerForm() {
         <label class="field">Elevens navn<input name="student" required maxlength="80" placeholder="Fornavn Efternavn"></label>
         <label class="field">Klassetrin<input name="grade" maxlength="40" placeholder="F.eks. 2.g"></label>
         <label class="field">Fag<input name="subject" maxlength="80" placeholder="F.eks. Matematik A"></label>
-        <label class="field">Købte timer<input type="number" name="hours" value="20" min="0.5" max="500" step="0.5" required></label>
+        <div class="field span-all" style="display:grid;gap:6px;font-size:0.82rem;font-weight:700;color:var(--heading)">Betaling
+          <div class="pick" role="radiogroup" aria-label="Betaling" style="font-weight:400">
+            <label><input type="radio" name="billing" value="pakke" checked>
+              <span><strong>Timepakke</strong>Købte timer, der trækkes fra</span></label>
+            <label><input type="radio" name="billing" value="enkelt">
+              <span><strong>Time for time</strong>400 kr. pr. time, ingen pakke</span></label>
+          </div>
+        </div>
+        <label class="field" data-pakke-only>Købte timer<input type="number" name="hours" value="20" min="0.5" max="500" step="0.5" required></label>
+        <label data-pakke-only style="display:flex;gap:10px;align-items:center;align-self:end;font-size:0.9rem;padding-bottom:12px">
+          <input type="checkbox" name="paid" style="width:auto"> Pakken er allerede betalt
+        </label>
         <label class="field">Forælderens navn<input name="parentName" required maxlength="80"></label>
         <label class="field">Forælderens e-mail<input type="email" name="parentEmail" required maxlength="200"></label>
         <label class="field span-all">Mål for forløbet<input name="goal" placeholder="F.eks. Tryg til eksamen i maj" maxlength="80"></label>
@@ -324,6 +357,16 @@ $("detail").addEventListener("submit", async (event) => {
   }
 });
 
+/* Ny kunde: "Time for time" skjuler feltet med købte timer. */
+$("detail").addEventListener("change", (event) => {
+  if (event.target.name !== "billing" || !event.target.closest("#customer-form")) return;
+  const single = event.target.value === "enkelt";
+  event.target.form.querySelectorAll("[data-pakke-only]").forEach((el) => {
+    el.hidden = single;
+    el.querySelectorAll("input").forEach((input) => { input.disabled = single; });
+  });
+});
+
 $("detail").addEventListener("input", (event) => {
   if (event.target.closest("#invoice-form")) refreshInvoiceTotal(event.target);
 });
@@ -334,13 +377,18 @@ async function handleSubmit(form, v, submitter) {
 
   if (form.id === "customer-form") {
     showError("");
+    const billing = v.billing === "enkelt" ? "enkelt" : "pakke";
     const { data: created, error } = await supabase.from("forloeb").insert({
-      student: text(v.student), grade: text(v.grade), subject: text(v.subject), goal: text(v.goal),
+      student: text(v.student), grade: text(v.grade), subject: text(v.subject), goal: text(v.goal), billing,
     }).select("id").single();
     if (error) { showError(`Forløbet kunne ikke oprettes: ${error.message}`); return; }
     const email = text(v.parentEmail).toLowerCase();
     const [pkg, parent] = await Promise.all([
-      supabase.from("forloeb_packages").insert({ forloeb_id: created.id, hours: Number(v.hours) }),
+      billing === "pakke"
+        ? supabase.from("forloeb_packages").insert({
+          forloeb_id: created.id, hours: Number(v.hours), paid_on: v.paid ? today() : null,
+        })
+        : { error: null },
       supabase.from("forloeb_parents").insert({ forloeb_id: created.id, name: text(v.parentName), email }).select("id").single(),
     ]);
     activeId = created.id;
@@ -374,6 +422,7 @@ async function handleSubmit(form, v, submitter) {
       supabase.from("forloeb").update({
         student: text(v.student), grade: text(v.grade), subject: text(v.subject), goal: text(v.goal),
         next_date: v.date || null, next_time: v.time || null,
+        billing: v.billing === "enkelt" ? "enkelt" : "pakke",
       }).eq("id", c.id),
       "Gemt. Forældresiden er opdateret.",
     );
@@ -409,6 +458,15 @@ $("detail").addEventListener("click", async (event) => {
   } else if (action === "del-parent") {
     if (!confirm(`Fjern adgangen for ${email}? De kan ikke længere se forløbet.`)) return;
     await write(supabase.from("forloeb_parents").delete().eq("id", id), "Adgangen er fjernet.");
+  } else if (action === "pkg-paid") {
+    button.disabled = true;
+    await write(
+      supabase.from("forloeb_packages").update({ paid_on: today() }).eq("id", id),
+      `Timepakken er markeret som betalt i dag.`,
+    );
+  } else if (action === "pkg-unpaid") {
+    if (!confirm("Markér timepakken som ikke betalt igen?")) return;
+    await write(supabase.from("forloeb_packages").update({ paid_on: null }).eq("id", id), "Timepakken står som ikke betalt.");
   } else if (action === "del-package") {
     if (!confirm("Fjern denne timepakke?")) return;
     await write(supabase.from("forloeb_packages").delete().eq("id", id));

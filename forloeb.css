@@ -231,7 +231,7 @@ input:focus, select:focus, textarea:focus {
 .cust .meter { height: 6px; margin: 9px 0 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { white-space: nowrap; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--bg-2); color: var(--muted); }
-.chip.report, .chip.hours { background: #fdf0ef; color: #8a3b36; }
+.chip.report, .chip.hours, .chip.pay { background: #fdf0ef; color: #8a3b36; }
 .chip.plan, .chip.login { background: var(--gold-soft); color: #1f4d3a; }
 .chip.ok { background: var(--sage-soft); color: #3f6136; }
 

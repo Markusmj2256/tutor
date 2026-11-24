@@ -23,13 +23,15 @@ export function toCustomer(row) {
     grade: row.grade,
     subject: row.subject,
     goal: row.goal,
-    next: { date: row.next_date || "", time: (row.next_time || "").slice(0, 5) },
+    // "pakke" = købte timer, der trækkes fra. "enkelt" = time for time.
+    billing: row.billing === "enkelt" ? "enkelt" : "pakke",
+    next:{ date: row.next_date || "", time: (row.next_time || "").slice(0, 5) },
     parents: (row.forloeb_parents || []).map((p) => ({
       id: p.id, name: p.name, email: p.email,
       invited: p.invited_at, lastLogin: p.last_login_at,
     })).sort((a, b) => a.name.localeCompare(b.name, "da")),
     packages: (row.forloeb_packages || []).map((p) => ({
-      id: p.id, date: p.bought_on, hours: Number(p.hours),
+      id: p.id, date: p.bought_on, hours: Number(p.hours), paid: p.paid_on || "",
     })).sort((a, b) => a.date.localeCompare(b.date)),
     sessions: (row.forloeb_sessions || []).map((s) => ({
       id: s.id, date: s.held_on, hours: Number(s.hours), level: s.level,
@@ -62,8 +64,12 @@ export function flags(c) {
   if (nextPassed && !c.sessions.some((s) => s.date === c.next.date)) {
     out.push({ kind: "report", text: `Rapport mangler for ${fmtDate(c.next.date)}` });
   }
-  if (st.used > st.bought) out.push({ kind: "hours", text: `${fmtHours(st.used - st.bought)} over pakken` });
-  else if (st.left <= 3) out.push({ kind: "hours", text: `${fmtHours(st.left)} tilbage` });
+  if (c.billing === "pakke") {
+    if (st.used > st.bought) out.push({ kind: "hours", text: `${fmtHours(st.used - st.bought)} over pakken` });
+    else if (st.left <= 3) out.push({ kind: "hours", text: `${fmtHours(st.left)} tilbage` });
+  }
+  const unpaid = c.packages.filter((p) => !p.paid).length;
+  if (unpaid) out.push({ kind: "pay", text: unpaid === 1 ? "Pakke ikke betalt" : `${unpaid} pakker ikke betalt` });
   if (!c.next.date || nextPassed) out.push({ kind: "plan", text: "Næste gang er ikke aftalt" });
   if (!c.parents.length) out.push({ kind: "login", text: "Ingen forældre har adgang" });
   c.parents.filter((p) => !p.lastLogin).forEach((p) => {
